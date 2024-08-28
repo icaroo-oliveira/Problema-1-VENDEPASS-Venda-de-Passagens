@@ -1,6 +1,7 @@
 import socket
 
 def start_server():
+
     # Cria um socket TCP/IP
     # 1- Define ipv4
     # 2- Socket do tipo TCP
@@ -42,3 +43,5 @@ def start_server():
 
 if __name__ == "__main__":
     start_server()
+
+#e
