@@ -1,4 +1,17 @@
 import socket
+from modelos.rotas import Rota_unica,Rotas
+import json
+
+def lendo():
+    with open('modelos/rotas.json', 'r') as arquivo:
+        dados_existentes = json.load(arquivo)
+        return dados_existentes
+
+
+def salvar_em_json(i):
+        with open('modelos/rotas.json', 'w') as arquivo_json:
+            json.dump(i, arquivo_json, indent=4)
+
 
 def start_server():
 
@@ -19,19 +32,67 @@ def start_server():
     # Bloqueia a execução do programa até alguém se conectar
     # Retorna socket do cliente e seu endereço IP
     connection, client_address = server_socket.accept()
+    
     try:
         print(f"Conectado a {client_address}")
 
-        # Loop para receber dados do cliente
         while True:
-            # Recebe até 1024 bytes de dados do cliente
+
             data = connection.recv(1024)
             
             if data:
                 print(f"Recebido: {data.decode('utf-8')}")
-                # Envia uma resposta ao cliente
-                # Envia de volta ao cliente os dados recebidos
-                connection.sendall(data)
+
+                dados = lendo()
+                
+               
+                for item in dados[data.decode('utf-8')]:
+                    cont=0
+                    for trecho in dados[data.decode('utf-8')][item]:
+                       
+                        if(trecho['assentos']>0):
+                            cont+=1
+
+                    if cont==len(dados[data.decode('utf-8')][item]):
+                        print(f"caminhos disponíveis: ", dados[data.decode('utf-8')][item])
+                        message = "available"
+
+                #salvando o dado do lugar
+                lugar = data.decode('utf-8')
+                connection.sendall(message.encode('utf-8'))
+
+
+
+                data = connection.recv(1024)
+
+                #se n tinha problema com os trechos
+                if data:
+                    
+                    if data.decode('utf-8')!='999':
+
+                        for num,item in enumerate(dados[lugar][data.decode('utf-8')]):
+
+                            rota = Rota_unica.from_dict(item)
+                            rota.compra_passagem()
+                            dados[lugar][data.decode('utf-8')][num]=rota.to_dict()
+                            
+                        
+
+                        salvar_em_json(dados)
+
+
+                        message = "acquired"
+                        
+                        connection.sendall(message.encode('utf-8'))
+
+                        
+                else:
+                    message = "weve ran out of tickets! good luck next time"
+                    connection.sendall(message.encode('utf-8'))
+
+
+                    
+
             
             # Cliente encerrou a conexão
             else:
