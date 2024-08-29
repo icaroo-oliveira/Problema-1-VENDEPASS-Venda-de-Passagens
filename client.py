@@ -11,8 +11,8 @@ def start_client():
     client_socket.connect(server_address)
 
     try:
-        # Envia dados
-        message = "Faz o L! "
+        # Solicitando viagem para :
+        message = "Salvador-Recife"
         print(f"Enviando: {message}")
 
         # Transforma mensagem em bytes e envia ao servidor
@@ -21,6 +21,27 @@ def start_client():
         # Recebe a resposta do servidor (até 1024 bytes).
         data = client_socket.recv(1024)
         print(f"Recebido: {data.decode('utf-8')}")
+
+
+
+
+
+
+        #se tem passagem disponível, já compra
+        if data.decode('utf-8') == "available":
+
+            message = input("Caminho")
+
+            print(f"Enviando: {message}")
+            client_socket.sendall(message.encode('utf-8'))
+            
+
+
+            
+            data = client_socket.recv(1024)
+            print(f"Recebido: {data.decode('utf-8')}")
+
+
 
     finally:
         # Fecha a conexão
