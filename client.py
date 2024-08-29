@@ -1,51 +1,55 @@
-import socket
+import json
+import os
 
-def start_client():
-    # Cria um socket TCP/IP
-    # 1- Define ipv4
-    # 2- Socket do tipo TCP
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    # Conecta ao servidor
-    server_address = ('localhost', 65435)
-    client_socket.connect(server_address)
-
-    try:
-        # Solicitando viagem para :
-        message = "Salvador-Recife"
-        print(f"Enviando: {message}")
-
-        # Transforma mensagem em bytes e envia ao servidor
-        client_socket.sendall(message.encode('utf-8'))
-
-        # Recebe a resposta do servidor (até 1024 bytes).
-        data = client_socket.recv(1024)
-        print(f"Recebido: {data.decode('utf-8')}")
+class Rota_unica:
+    def __init__(self,ligacao,peso):
+        self.ligacao = ligacao
+        self.assentos = 5
+        self.peso=peso
 
 
+    
+    def compra_passagem(self):
+        if self.assentos>=1:
+            self.assentos=self.assentos - 1
+        else:
+            print("cabou se !! \n tente mais na próxima vez, pobre diabo sem fortuna !!")
 
+    def to_dict(self):
+        return {
+            'rota': self.rota,
+            'assentos': self.assentos,
+            'peso':self.peso
+        }
+    
+    @classmethod
+    def from_dict(cls, dicionario):
 
-
-
-        #se tem passagem disponível, já compra
-        if data.decode('utf-8') == "available":
-
-            message = input("Caminho")
-
-            print(f"Enviando: {message}")
-            client_socket.sendall(message.encode('utf-8'))
-            
-
-
-            
-            data = client_socket.recv(1024)
-            print(f"Recebido: {data.decode('utf-8')}")
+        instancia = cls(dicionario['rota'])
+        instancia.assentos = dicionario['assentos']
+        instancia.peso = dicionario['peso']
+        return instancia
 
 
 
-    finally:
-        # Fecha a conexão
-        client_socket.close()
+class No:
+    def __init__(self,nome_inicio,lista):
+        self.inicio = nome_inicio
+        self.ligacoes = lista
+        self.adicione_Rota_Unica()
 
-if __name__ == "__main__":
-    start_client()
+
+
+    def adicione_Rota_Unica(self):
+         
+        for num,item in enumerate(self.ligacoes):
+             rota = Rota_unica(self.inicio + '-' + item,1)
+         
+
+
+
+
+
+        
+
+
