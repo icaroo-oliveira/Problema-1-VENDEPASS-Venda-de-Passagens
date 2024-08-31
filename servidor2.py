@@ -23,7 +23,6 @@ def carregar_grafo(arquivo):
     
     return grafo
 
-
 def salvar_grafo(grafo, arquivo):
 
     # Novo grafo a ser salvo em arquivo
@@ -42,7 +41,6 @@ def salvar_grafo(grafo, arquivo):
     # Salva novo grafo em arquivo
     with open(arquivo, 'w') as arq:
         json.dump(dados_novos, arq, indent=4)
-
 
 def encontrar_caminhos(grafo, cidade_inicial, cidade_fim):
     caminhos = []
@@ -80,7 +78,7 @@ def start_server():
     except FileNotFoundError:
         print("Arquivo não encontrado. Criando um novo grafo.")
         
-        # Criando um novo grafo com 5 vértices (cidades) e salvando
+        # Criando um novo grafo e salvando
         G = nx.DiGraph()
 
         # Caminhos de Cuiaba
@@ -141,10 +139,9 @@ def start_server():
         # }
 
         # É um dicionário geral que armazena todas as conexões (grafo)
-        # As chaves desse dicionário são tuplas que armazenam a cidade inicio e a cidade fim
+        # As chaves desse dicionário são tuplas que armazenam a v1 e v2 (cidades com conexão)
         # Os valores dessas chaves são dicionários, onde as chaves serão as distancias, assentos e id. Os valores
         # dessas chaves são as informações desses dados
-
         salvar_grafo(G, arquivo_grafo)
 
     # Cria um socket TCP/IP
@@ -170,13 +167,13 @@ def start_server():
             print(f"Conectado a {client_address}")
 
             # Cidade origem e destino
-            data1 = connection.recv(1024)
+            data = connection.recv(1024)
 
-            if data1:
+            if data:
                 cidades = ["Cuiaba", "Goiania", "Campo Grande", "Belo Horizonte", "Vitoria", 
                         "Sao Paulo", "Rio de Janeiro", "Curitiba", "Florianopolis", "Porto Alegre"]
                 
-                origem, destino = data1.decode('utf-8').split(',')
+                origem, destino = data.decode('utf-8').split(',')
 
                 origem = cidades[int(origem)-1]
                 destino = cidades[int(destino)-1]
@@ -193,10 +190,10 @@ def start_server():
 
                 if caminhos:
                     # Espera escolha do cliente
-                    data3 = connection.recv(1024)
+                    data = connection.recv(1024)
 
-                    if data3:
-                        indice, cpf = data3.decode('utf-8').split(',')
+                    if data:
+                        indice, cpf = data.decode('utf-8').split(',')
                         print(f"Recebido {indice}, {cpf}")
 
                         # Escolha do caminho pelo cliente

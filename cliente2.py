@@ -82,14 +82,14 @@ def start_client():
             # Transforma em lista novamente
             caminhos = json.loads(data.decode('utf-8'))
 
+            cidades = ["Cuiaba", "Goiania", "Campo Grande", "Belo Horizonte", "Vitoria", 
+                       "Sao Paulo", "Rio de Janeiro", "Curitiba", "Florianopolis", "Porto Alegre"]
+
             # Listando os caminhos do menor para o maior
             if caminhos:
-                cidades = ["Cuiaba", "Goiania", "Campo Grande", "Belo Horizonte", "Vitoria", 
-                       "Sao Paulo", "Rio de Janeiro", "Curitiba", "Florianopolis", "Porto Alegre"]
-                
                 print(f"Voos de {cidades[int(origem)-1]} para {cidades[int(destino)-1]}\n")
+        
                 i = 1
-
                 tam = len(caminhos)
                 while caminhos:
                     # Pega o primeiro item da lista, remove ele da lista e atualiza lista
@@ -127,7 +127,7 @@ def start_client():
 
             # Se a lista veio vazia, não tem caminhos, volta ao menu        
             else:
-                print(f"Nenhum caminho disponível de {origem} para {destino}\n\n")
+                print(f"\nNenhum caminho disponível de {cidades[int(origem)-1]} para {cidades[int(destino)-1]}\n")
 
         finally:
             # Fecha a conexão
