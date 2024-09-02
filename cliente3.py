@@ -18,8 +18,8 @@ def conecta_server():
 def start_client():
 
     # Lista de cidades do sistema
-    cidades = ["Cuiaba", "Goiania", "Campo Grande", "Belo Horizonte", "Vitoria", 
-                "Sao Paulo", "Rio de Janeiro", "Curitiba", "Florianopolis", "Porto Alegre"]
+    cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória", 
+                "São Paulo", "Rio de Janeiro", "Curitiba", "Florianópolis", "Porto Alegre"]
 
     # While do menu principal
     while True:

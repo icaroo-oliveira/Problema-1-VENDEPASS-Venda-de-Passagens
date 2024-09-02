@@ -63,12 +63,15 @@ def encontrar_caminhos(grafo, cidade_inicial, cidade_fim):
             # Organiza os caminhos em fila de prioridade (menor ao maior) a depender da distancia
             heapq.heappush(caminhos, (dist, path))
     
-    return caminhos
+    # Converte o heap em uma lista ordenada e limita a 10 elementos
+    caminhos_ordenados = [heapq.heappop(caminhos) for _ in range(min(len(caminhos), 10))]
+    
+    return caminhos_ordenados
 
 def start_server():
     # Cidades do sistema
-    cidades = ["Cuiaba", "Goiania", "Campo Grande", "Belo Horizonte", "Vitoria", 
-            "Sao Paulo", "Rio de Janeiro", "Curitiba", "Florianopolis", "Porto Alegre"]
+    cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória", 
+            "São Paulo", "Rio de Janeiro", "Curitiba", "Florianópolis", "Porto Alegre"]
 
     # Arquivo JSON onde o grafo será salvo/carregado
     arquivo_grafo = 'grafo.json'
@@ -84,55 +87,55 @@ def start_server():
         # Criando um novo grafo e salvando
         G = nx.DiGraph()
 
-        # Caminhos de Cuiaba
-        G.add_edge("Cuiaba", "Goiania", distancia=890, assentos=3, id=[])
-        G.add_edge("Cuiaba", "Campo Grande", distancia=700, assentos=3, id=[])
+        # Caminhos de Cuiabá
+        G.add_edge("Cuiabá", "Goiânia", distancia=890, assentos=3, id=[])
+        G.add_edge("Cuiabá", "Campo Grande", distancia=700, assentos=3, id=[])
 
-        # Caminhos de Goiania
-        G.add_edge("Goiania", "Cuiaba", distancia=890, assentos=3, id=[])
-        G.add_edge("Goiania", "Campo Grande", distancia=840, assentos=3, id=[])
-        G.add_edge("Goiania", "Belo Horizonte", distancia=890, assentos=3, id=[])
+        # Caminhos de Goiânia
+        G.add_edge("Goiânia", "Cuiabá", distancia=890, assentos=3, id=[])
+        G.add_edge("Goiânia", "Campo Grande", distancia=840, assentos=3, id=[])
+        G.add_edge("Goiânia", "Belo Horizonte", distancia=890, assentos=3, id=[])
 
         # Caminhos de Campo Grande
-        G.add_edge("Campo Grande", "Cuiaba", distancia=700, assentos=3, id=[])
-        G.add_edge("Campo Grande", "Goiania", distancia=840, assentos=3, id=[])
+        G.add_edge("Campo Grande", "Cuiabá", distancia=700, assentos=3, id=[])
+        G.add_edge("Campo Grande", "Goiânia", distancia=840, assentos=3, id=[])
         G.add_edge("Campo Grande", "Belo Horizonte", distancia=1250, assentos=3, id=[])
-        G.add_edge("Campo Grande", "Sao Paulo", distancia=980, assentos=3, id=[])
+        G.add_edge("Campo Grande", "São Paulo", distancia=980, assentos=3, id=[])
         G.add_edge("Campo Grande", "Curitiba", distancia=1000, assentos=3, id=[])
 
         # Caminhos de Belo Horizonte
-        G.add_edge("Belo Horizonte", "Goiania", distancia=890, assentos=3, id=[])
-        G.add_edge("Belo Horizonte", "Vitoria", distancia=510, assentos=3, id=[])
+        G.add_edge("Belo Horizonte", "Goiânia", distancia=890, assentos=3, id=[])
+        G.add_edge("Belo Horizonte", "Vitória", distancia=510, assentos=3, id=[])
         G.add_edge("Belo Horizonte", "Campo Grande", distancia=1250, assentos=3, id=[])
-        G.add_edge("Belo Horizonte", "Sao Paulo", distancia=585, assentos=3, id=[])
+        G.add_edge("Belo Horizonte", "São Paulo", distancia=585, assentos=3, id=[])
         G.add_edge("Belo Horizonte", "Rio de Janeiro", distancia=440, assentos=3, id=[])
 
-        # Caminhos de Vitoria
-        G.add_edge("Vitoria", "Belo Horizonte", distancia=510, assentos=3, id=[])
-        G.add_edge("Vitoria", "Rio de Janeiro", distancia=520, assentos=3, id=[])
+        # Caminhos de Vitória
+        G.add_edge("Vitória", "Belo Horizonte", distancia=510, assentos=3, id=[])
+        G.add_edge("Vitória", "Rio de Janeiro", distancia=520, assentos=3, id=[])
 
-        # Caminhos de Sao Paulo
-        G.add_edge("Sao Paulo", "Belo Horizonte", distancia=585, assentos=3, id=[])
-        G.add_edge("Sao Paulo", "Campo Grande", distancia=980, assentos=3, id=[])
-        G.add_edge("Sao Paulo", "Rio de Janeiro", distancia=440, assentos=3, id=[])
-        G.add_edge("Sao Paulo", "Curitiba", distancia=400, assentos=3, id=[])
+        # Caminhos de São Paulo
+        G.add_edge("São Paulo", "Belo Horizonte", distancia=585, assentos=3, id=[])
+        G.add_edge("São Paulo", "Campo Grande", distancia=980, assentos=3, id=[])
+        G.add_edge("São Paulo", "Rio de Janeiro", distancia=440, assentos=3, id=[])
+        G.add_edge("São Paulo", "Curitiba", distancia=400, assentos=3, id=[])
 
         # Caminhos de Rio de Janeiro
-        G.add_edge("Rio de Janeiro", "Vitoria", distancia=520, assentos=3, id=[])
+        G.add_edge("Rio de Janeiro", "Vitória", distancia=520, assentos=3, id=[])
         G.add_edge("Rio de Janeiro", "Belo Horizonte", distancia=440, assentos=3, id=[])
-        G.add_edge("Rio de Janeiro", "Sao Paulo", distancia=440, assentos=3, id=[])
+        G.add_edge("Rio de Janeiro", "São Paulo", distancia=440, assentos=3, id=[])
 
         # Caminhos de Curitiba
         G.add_edge("Curitiba", "Campo Grande", distancia=1000, assentos=3, id=[])
-        G.add_edge("Curitiba", "Sao Paulo", distancia=400, assentos=3, id=[])
-        G.add_edge("Curitiba", "Florianopolis", distancia=300, assentos=3, id=[])
+        G.add_edge("Curitiba", "São Paulo", distancia=400, assentos=3, id=[])
+        G.add_edge("Curitiba", "Florianópolis", distancia=300, assentos=3, id=[])
 
-        # Caminhos de Florianopolis
-        G.add_edge("Florianopolis", "Curitiba", distancia=300, assentos=3, id=[])
-        G.add_edge("Florianopolis", "Porto Alegre", distancia=460, assentos=3, id=[])
+        # Caminhos de Florianópolis
+        G.add_edge("Florianópolis", "Curitiba", distancia=300, assentos=3, id=[])
+        G.add_edge("Florianópolis", "Porto Alegre", distancia=460, assentos=3, id=[])
 
         # Caminhos de Porto Alegre
-        G.add_edge("Porto Alegre", "Florianopolis", distancia=460, assentos=3, id=[])
+        G.add_edge("Porto Alegre", "Florianópolis", distancia=460, assentos=3, id=[])
 
         # Estrutura é parecida com isso
         # { 
