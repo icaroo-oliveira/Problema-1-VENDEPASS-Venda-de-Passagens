@@ -141,7 +141,7 @@ def start_client():
                     encerrar = 1
                     break
                 if escolha == "100":
-                    clear_terminal()
+                    #clear_terminal()
                     break
                 
                 caminho = caminhos[int(escolha)-1]
@@ -179,8 +179,8 @@ def start_client():
                     print("Compra feita com sucesso!")
                     imprime_divisoria()
 
-                    time.sleep(5)
-                    clear_terminal()
+                    #time.sleep(5)
+                    #clear_terminal()
                     break
 
                 elif flag == '1':
@@ -193,8 +193,8 @@ def start_client():
                 print(f"Nenhum caminho disponível de {cidades[int(origem)-1]} para {cidades[int(destino)-1]}")
                 imprime_divisoria()
 
-                time.sleep(5)
-                clear_terminal()
+                #time.sleep(5)
+                #clear_terminal()
                 break
 
         if encerrar == 1:

@@ -12,6 +12,9 @@ cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória",
 
 arquivo_grafo = 'grafo.json'
 
+lock = threading.Lock()
+
+
 def carregar_grafo(arquivo):
     # Abre arquivo e retorna os dados do grafo
     with open(arquivo, 'r') as arq:
@@ -101,10 +104,11 @@ def handle_client(connection, client_address):
                 print(f"Recebido o destino: {destino}")
 
                 # locka aqui
-                G = carregar_grafo(arquivo_grafo)
-                caminhos = encontrar_caminhos(G, origem, destino)
-                serializa = json.dumps(caminhos)
-                connection.sendall(serializa.encode('utf-8'))
+                with lock:
+                    G = carregar_grafo(arquivo_grafo)
+                    caminhos = encontrar_caminhos(G, origem, destino)
+                    serializa = json.dumps(caminhos)
+                    connection.sendall(serializa.encode('utf-8'))
                 # deslocka aqui
 
             elif flag == '1':
@@ -113,32 +117,33 @@ def handle_client(connection, client_address):
                 caminho = json.loads(caminho)
 
                 # locka aqui
-                G = carregar_grafo(arquivo_grafo)
+                with lock:
+                    G = carregar_grafo(arquivo_grafo)
 
-                comprar = True
-                for i in range(len(caminho[1]) - 1):
-                    trecho = (caminho[1][i], caminho[1][i + 1])
-                    if G[trecho[0]][trecho[1]]['assentos'] == 0:
-                        caminhos = encontrar_caminhos(G, origem, destino)
-                        message = '1'
-                        serializa = json.dumps(caminhos)
-                        envia = f"{message},{serializa}"
-                        connection.sendall(envia.encode('utf-8'))
-                        # deslocka aqui
-                        comprar = False
-                        break
-
-                if comprar:
+                    comprar = True
                     for i in range(len(caminho[1]) - 1):
                         trecho = (caminho[1][i], caminho[1][i + 1])
-                        G[trecho[0]][trecho[1]]['assentos'] -= 1
-                        G[trecho[0]][trecho[1]]['id'].append(id)
-                    salvar_grafo(G, arquivo_grafo)
-                    message = '0'
-                    nada = "d"
-                    envia = f"{message}, {nada}"
-                    connection.sendall(envia.encode('utf-8'))
-                    # deslocka aqui
+                        if G[trecho[0]][trecho[1]]['assentos'] == 0:
+                            caminhos = encontrar_caminhos(G, origem, destino)
+                            message = '1'
+                            serializa = json.dumps(caminhos)
+                            envia = f"{message},{serializa}"
+                            connection.sendall(envia.encode('utf-8'))
+                            # deslocka aqui
+                            comprar = False
+                            break
+
+                    if comprar:
+                        for i in range(len(caminho[1]) - 1):
+                            trecho = (caminho[1][i], caminho[1][i + 1])
+                            G[trecho[0]][trecho[1]]['assentos'] -= 1
+                            G[trecho[0]][trecho[1]]['id'].append(id)
+                        salvar_grafo(G, arquivo_grafo)
+                        message = '0'
+                        nada = "d"
+                        envia = f"{message}, {nada}"
+                        connection.sendall(envia.encode('utf-8'))
+                        # deslocka aqui
     finally:
         connection.close()
         print("\nConexão encerrada. Aguardando nova conexão...\n")
