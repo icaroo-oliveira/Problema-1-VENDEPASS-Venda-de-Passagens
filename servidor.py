@@ -98,7 +98,7 @@ def handle_client(connection, client_address):
                 print(f"Recebido a flag: {flag}")
                 print(f"Recebido a origem: {origem}")
                 print(f"Recebido o destino: {destino}")
-                
+
                 # locka aqui
                 G = carregar_grafo(arquivo_grafo)
                 caminhos = encontrar_caminhos(G, origem, destino)
@@ -118,11 +118,12 @@ def handle_client(connection, client_address):
                 for i in range(len(caminho[1]) - 1):
                     trecho = (caminho[1][i], caminho[1][i + 1])
                     if G[trecho[0]][trecho[1]]['assentos'] == 0:
-                        message = '1'
                         caminhos = encontrar_caminhos(G, origem, destino)
+                        message = '1'
                         serializa = json.dumps(caminhos)
                         envia = f"{message},{serializa}"
                         connection.sendall(envia.encode('utf-8'))
+                        # deslocka aqui
                         comprar = False
                         break
 
@@ -136,8 +137,7 @@ def handle_client(connection, client_address):
                     nada = "d"
                     envia = f"{message}, {nada}"
                     connection.sendall(envia.encode('utf-8'))
-                
-                # deslocka aqui ( fora do if )
+                    # deslocka aqui
     finally:
         connection.close()
         print("\nConexão encerrada. Aguardando nova conexão...\n")
