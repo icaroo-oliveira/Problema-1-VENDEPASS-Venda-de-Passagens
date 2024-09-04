@@ -4,7 +4,13 @@ import networkx as nx
 import heapq
 import json
 import time
+
 cont = 0
+
+cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória", 
+            "São Paulo", "Rio de Janeiro", "Curitiba", "Florianópolis", "Porto Alegre"]
+
+arquivo_grafo = 'grafo.json'
 
 def carregar_grafo(arquivo):
     # Abre arquivo e retorna os dados do grafo
@@ -70,30 +76,17 @@ def encontrar_caminhos(grafo, cidade_inicial, cidade_fim):
     
     return caminhos_ordenados
 
-
-
-
-
-
 def handle_client(connection, client_address):
     global cont
 
-    cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória", 
-               "São Paulo", "Rio de Janeiro", "Curitiba", "Florianópolis", "Porto Alegre"]
-    arquivo_grafo = 'grafo.json'
-    
-    
-
     try:
-        
-        
         print(f"Conectado a {client_address}")
-        if cont==0:
-            time.sleep(20)
-        if cont==1:
-            time.sleep(20)
-        if cont==2:
-            time.sleep(20)
+        #if cont==0:
+         #   time.sleep(20)
+        #if cont==1:
+        #    time.sleep(20)
+        #if cont==2:
+        #    time.sleep(20)
         data = connection.recv(1024)
         cont+=1
         if data:
@@ -105,16 +98,21 @@ def handle_client(connection, client_address):
                 print(f"Recebido a flag: {flag}")
                 print(f"Recebido a origem: {origem}")
                 print(f"Recebido o destino: {destino}")
+                
+                # locka aqui
                 G = carregar_grafo(arquivo_grafo)
                 caminhos = encontrar_caminhos(G, origem, destino)
                 serializa = json.dumps(caminhos)
                 connection.sendall(serializa.encode('utf-8'))
+                # deslocka aqui
 
             elif flag == '1':
-                G = carregar_grafo(arquivo_grafo)
-                caminho = json.loads(caminho)
                 print(f"Recebido a flag: {flag}")
                 print(f"Recebido {caminho}, {id}")
+                caminho = json.loads(caminho)
+
+                # locka aqui
+                G = carregar_grafo(arquivo_grafo)
 
                 comprar = True
                 for i in range(len(caminho[1]) - 1):
@@ -138,20 +136,14 @@ def handle_client(connection, client_address):
                     nada = "d"
                     envia = f"{message}, {nada}"
                     connection.sendall(envia.encode('utf-8'))
+                
+                # deslocka aqui ( fora do if )
     finally:
         connection.close()
         print("\nConexão encerrada. Aguardando nova conexão...\n")
         print(cont)
 
-
 def start_server():
-    # Cidades do sistema
-    cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória", 
-            "São Paulo", "Rio de Janeiro", "Curitiba", "Florianópolis", "Porto Alegre"]
-
-    # Arquivo JSON onde o grafo será salvo/carregado
-    arquivo_grafo = 'grafo.json'
-
     # Carregando o grafo a partir do arquivo JSON
     try:
         G = carregar_grafo(arquivo_grafo)
@@ -241,7 +233,6 @@ def start_server():
     print("Aguardando conexão...")
 
     while True:
-        
         # Espera por uma conexão
         # Bloqueia a execução do programa até alguém se conectar
         # Retorna socket do cliente e seu endereço IP
@@ -249,11 +240,6 @@ def start_server():
         
         client_thread = threading.Thread(target=handle_client, args=(connection, client_address))
         client_thread.start()
-
-
-        
-
-            
 
 if __name__ == "__main__":
     start_server()
