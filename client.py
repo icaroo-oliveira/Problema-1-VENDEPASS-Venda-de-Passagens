@@ -61,6 +61,7 @@ def start_client():
                 if escolha == "0":
                     encerrar = 1
                     break
+                
                 if escolha == "100":
                     clear_terminal()
                     break
@@ -70,7 +71,7 @@ def start_client():
                 serializa = json.dumps(caminho)
 
                 client_socket = conecta_server()
-                if not client_socket:
+                if client_socket is None:
                     sleep_clear(3)
                     break
 
