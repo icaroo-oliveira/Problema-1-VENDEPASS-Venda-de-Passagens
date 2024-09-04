@@ -1,5 +1,6 @@
 import socket
 
+# Função pra configurar o servidor
 def config_server():
     try:
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -14,6 +15,7 @@ def config_server():
         print(f"Erro ao associar o socket ao endereço: {e}")
         return None
 
+# Função para cliente conectar ao servidor
 def conecta_server():
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,11 +24,11 @@ def conecta_server():
         client_socket.connect(server_address) 
         return client_socket
     
-    # IP ou host com problema, servidor não disponível ou recusou conexão, conexão demorou muito, outro erro qualquer
     except (OSError, socket.timeout, Exception) as e:
         print(f"Erro ao conectar ao servidor: {e}")
         return None
 
+# Função para enviar dados de cliente pra servidor ou o contrario
 def enviar_mensagem(new_socket, mensagem):
     try:
         new_socket.sendall(mensagem.encode('utf-8'))
@@ -37,7 +39,8 @@ def enviar_mensagem(new_socket, mensagem):
         print(f"Erro no envio de dados: {e}. Retornando ...")
         encerrar_conexao(new_socket)
         return None
-        
+
+# Função para receber dados de cliente pra servidor ou o contrario
 def receber_mensagem(new_socket):
     try:
         data = new_socket.recv(1024)
@@ -49,6 +52,7 @@ def receber_mensagem(new_socket):
         encerrar_conexao(new_socket)
         return None
 
+# Função pra encerrar conexão
 def encerrar_conexao(new_socket):
     try:
         new_socket.close()

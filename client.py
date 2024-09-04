@@ -21,6 +21,7 @@ def start_client():
             clear_terminal()
             continue
         
+        # Se não conseguir se conectar ao servidor, volta ao menu principal
         client_socket = conecta_server()
         if client_socket is None:
             sleep_clear(3)
@@ -28,6 +29,7 @@ def start_client():
 
         mensagem = f"0,{origem},{destino},,"
         
+        # Se não enviar ou receber dados, encerra conexão automaticamente e volta ao menu principal
         data = enviar_mensagem(client_socket, mensagem)
         if data is None:
             sleep_clear(3)
@@ -38,6 +40,7 @@ def start_client():
             sleep_clear(3)
             continue
         
+        # Depois de enviar e receber o dado, encerra conexão
         encerrar_conexao(client_socket)
 
         caminhos = json.loads(data.decode('utf-8'))
@@ -70,6 +73,7 @@ def start_client():
                 id = input("Digite seu CPF para registro da compra (apenas os números): ")
                 serializa = json.dumps(caminho)
 
+                # Se não conseguir se conectar ao servidor, volta ao menu principal
                 client_socket = conecta_server()
                 if client_socket is None:
                     sleep_clear(3)
@@ -77,6 +81,7 @@ def start_client():
 
                 mensagem = f"1,{origem},{destino},{id},{serializa}"
 
+                # Se não enviar ou receber dados, encerra conexão automaticamente e volta para escolha do caminho
                 data = enviar_mensagem(client_socket, mensagem)
                 if data is None:
                     time.sleep(3)
@@ -87,6 +92,7 @@ def start_client():
                     time.sleep(3)
                     continue
                 
+                # Depois de enviar e receber o dado, encerra conexão
                 encerrar_conexao(client_socket)
 
                 flag, lista = data.decode('utf-8').split(',', 1)

@@ -15,6 +15,7 @@ def soma_valor(km):
 def imprime_divisoria():
     print("\n" + "=" * 120 + "\n")
 
+# Sleep de n segundos e limpa tela
 def sleep_clear(segundos):
     time.sleep(segundos)
     clear_terminal()

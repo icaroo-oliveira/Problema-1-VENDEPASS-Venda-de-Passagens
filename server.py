@@ -227,6 +227,7 @@ def start_server():
         # dessas chaves são as informações desses dados
         salvar_grafo(G, arquivo_grafo)
 
+    # Se não conseguir criar e configurar servidor, encerra programa
     server_socket = config_server()
     if server_socket is None:
         print("Erro ao iniciar o servidor. Encerrando aplicação.")
@@ -245,6 +246,7 @@ def start_server():
         except socket.timeout:
             None
 
+        # Se não conseguir se conectar com um cliente, volta a procurar conexões
         except (OSError, Exception) as e:
             print(f"Erro ao aceitar conexão: {e}.")
 
