@@ -76,6 +76,7 @@ def encontrar_caminhos(grafo, cidade_inicial, cidade_fim):
 
 
 def handle_client(connection, client_address):
+
     global cont
 
     cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória", 
@@ -88,14 +89,14 @@ def handle_client(connection, client_address):
         
         
         print(f"Conectado a {client_address}")
-        if cont==0:
-            time.sleep(20)
-        if cont==1:
-            time.sleep(20)
-        if cont==2:
-            time.sleep(20)
+        # if cont==0:
+        #     time.sleep(20)
+        # if cont==1:
+        #     time.sleep(20)
+        # if cont==2:
+        #     time.sleep(20)
         data = connection.recv(1024)
-        cont+=1
+        #cont+=1
         if data:
             flag, origem, destino, id, caminho = data.decode('utf-8').split(',', 4)
             origem = cidades[int(origem) - 1]

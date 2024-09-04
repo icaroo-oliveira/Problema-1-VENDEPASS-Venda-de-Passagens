@@ -1,6 +1,9 @@
 import socket
 import json
+import sys
+import time
 
+cont = True
 def conecta_server():
     # Cria um socket TCP/IP
     # 1- Define ipv4
@@ -17,6 +20,8 @@ def conecta_server():
 
 def start_client():
 
+    global cont
+
     # Lista de cidades do sistema
     cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória", 
                 "São Paulo", "Rio de Janeiro", "Curitiba", "Florianópolis", "Porto Alegre"]
@@ -25,7 +30,11 @@ def start_client():
     while True:
         print("Sistema de vendas\n")
 
-        escolha = (input("1- Comprar\n0- Encerrar programa\n>>> "))
+        if not cont:
+            escolha = (input("1- Comprar\n0- Encerrar programa\n>>> "))
+        else:
+            escolha = sys.argv[1]
+
 
         while escolha != '1' and escolha != '0':
             escolha = (input("Entrada inválida.\n\n1- Comprar\n0- Encerrar programa\n>>> "))
@@ -42,7 +51,18 @@ def start_client():
         print("0- Encerrar programa\n100- Menu\n")
 
         while True:
-            origem = input("Escolha o número refetente a cidade origem: ")
+            #origem = input("Escolha o número refetente a cidade origem: ")
+            
+
+
+
+            if not cont:
+                origem = input("Escolha o número refetente a cidade origem: ")
+            else:
+                origem = sys.argv[2]
+
+
+
 
             if int(origem) < 0 or (int(origem) > 10 and int(origem) < 100) or int(origem) > 100:
                 origem = (input("Entrada inválida."))
@@ -57,7 +77,15 @@ def start_client():
             continue
 
         while True:
-            destino = input("Escolha o número refetente a cidade destino: ")
+            #destino = input("Escolha o número refetente a cidade destino: ")
+            
+
+
+            if not cont:
+                destino = input("Escolha o número refetente a cidade destino: ")
+            else:
+                destino = sys.argv[3]
+
 
             if int(destino) < 0 or (int(destino) > 10 and int(destino) < 100) or int(destino) > 100:
                 destino = (input("Entrada inválida."))
@@ -75,7 +103,7 @@ def start_client():
 
         try:
             # Envia 0 pra indicar ao servidor que é pra retornar os caminhos
-            mensagem = f"{'0'},{origem},{destino},{""},{""}"
+            mensagem = f"{'0'},{origem},{destino},{''},{''}"
             
             client_socket.sendall(mensagem.encode('utf-8'))
 
@@ -111,7 +139,19 @@ def start_client():
                 print("0- Encerrar programa\n100- Menu\n")
 
                 while True:
-                    escolha = input("Escolha um caminho: ")
+                    #escolha = input("Escolha um caminho: ")
+                    #escolha = sys.argv[4]
+
+
+                    
+                    if not cont:
+                        escolha = input("Escolha um caminho: ")
+                    else:
+                        escolha = sys.argv[4]
+
+
+
+
 
                     if (int(escolha) < 0 or int(escolha) > 100 or (int(escolha) > tam and int(escolha) <= 99)):
                         escolha = (input("Entrada inválida."))
@@ -130,8 +170,21 @@ def start_client():
                 # Caminho escolhido ( tupla com distancia e lista de trechos ) -> Envia ao servidor pra verificar se caminho ainda ta disponível
                 caminho = caminhos[int(escolha)-1]
                 
-                id = input("Digite seu CPF para registro da compra (apenas os números): ")
+                #id = input("Digite seu CPF para registro da compra (apenas os números): ")
 
+                if not cont:
+                    id = input("Digite seu CPF para registro da compra (apenas os números): ")
+                else:
+                    id = sys.argv[5]
+                    cont = False
+
+                
+
+
+
+
+                
+                #print(id)
                 # Transforma tupla e envia para o servidor
                 serializa = json.dumps(caminho)
                 
