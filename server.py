@@ -4,6 +4,7 @@ import networkx as nx
 import heapq
 import json
 import time
+from connection import config_server, receber_mensagem, enviar_mensagem, encerrar_conexao
 
 cont = 0
 
@@ -78,7 +79,7 @@ def encontrar_caminhos(grafo, cidade_inicial, cidade_fim):
     
     return caminhos_ordenados
 
-def handle_client(connection, client_address):
+def handle_client(liga_socket, client_address):
     global cont
 
     try:
@@ -89,7 +90,8 @@ def handle_client(connection, client_address):
         #    time.sleep(20)
         #if cont==2:
         #    time.sleep(20)
-        data = connection.recv(1024)
+
+        data = receber_mensagem(liga_socket)
         cont+=1
         if data:
             flag, origem, destino, id, caminho = data.decode('utf-8').split(',', 4)
@@ -105,7 +107,10 @@ def handle_client(connection, client_address):
                     G = carregar_grafo(arquivo_grafo)
                     caminhos = encontrar_caminhos(G, origem, destino)
                     serializa = json.dumps(caminhos)
-                    connection.sendall(serializa.encode('utf-8'))
+
+                    data = enviar_mensagem(liga_socket, serializa)
+                    if data:
+                        print("Caminhos enviados com sucesso")
 
             elif flag == '1':
                 print(f"Recebido a flag: {flag}")
@@ -120,11 +125,15 @@ def handle_client(connection, client_address):
                     for i in range(len(caminho[1]) - 1):
                         trecho = (caminho[1][i], caminho[1][i + 1])
                         if G[trecho[0]][trecho[1]]['assentos'] == 0:
+                            comprar = False
                             caminhos = encontrar_caminhos(G, origem, destino)
                             serializa = json.dumps(caminhos)
                             mensagem = f"1,{serializa}"
-                            connection.sendall(mensagem.encode('utf-8'))
-                            comprar = False
+
+                            data = enviar_mensagem(liga_socket, mensagem)
+                            if data:
+                                print("Novos caminhos enviados com sucesso")
+
                             break
 
                     if comprar:
@@ -134,12 +143,14 @@ def handle_client(connection, client_address):
                             G[trecho[0]][trecho[1]]['id'].append(id)
                         salvar_grafo(G, arquivo_grafo)
                         mensagem = f"0,"
-                        connection.sendall(mensagem.encode('utf-8'))
+                        
+                        data = enviar_mensagem(liga_socket, mensagem)
+                        if data:
+                            print("Compra feita")
                     
     finally:
-        connection.close()
+        encerrar_conexao(liga_socket)
         print("\nConexão encerrada. Aguardando nova conexão...\n")
-        print(cont)
 
 def start_server():
     # Carregando o grafo a partir do arquivo JSON
@@ -216,28 +227,26 @@ def start_server():
         # dessas chaves são as informações desses dados
         salvar_grafo(G, arquivo_grafo)
 
-
-    # Cria um socket TCP/IP
-    # 1- Define ipv4
-    # 2- Socket do tipo TCP
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    # # Configura um endereço ( IP e Porta ) e associa ele a um socket
-    server_address = ('localhost', 65435)
-    server_socket.bind(server_address)
-
-    # Servidor aguarda por conexões
-    server_socket.listen(5)
-    print("Aguardando conexão...")
+    server_socket = config_server()
+    if server_socket is None:
+        print("Erro ao iniciar o servidor. Encerrando aplicação.")
+        return
 
     while True:
         # Espera por uma conexão
         # Bloqueia a execução do programa até alguém se conectar
         # Retorna socket do cliente e seu endereço IP
-        connection, client_address = server_socket.accept()
+        try:
+            liga_socket, client_address = server_socket.accept()
+            client_thread = threading.Thread(target=handle_client, args=(liga_socket, client_address))
+            client_thread.start()
         
-        client_thread = threading.Thread(target=handle_client, args=(connection, client_address))
-        client_thread.start()
+        # Se acontecer timeout, ou seja, ninguem se conectar em 10 segundos, não acontece nada, continua esperando
+        except socket.timeout:
+            None
+
+        except (OSError, Exception) as e:
+            print(f"Erro ao aceitar conexão: {e}.")
 
 if __name__ == "__main__":
     start_server()
