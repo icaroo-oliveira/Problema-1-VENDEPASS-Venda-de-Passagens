@@ -1,4 +1,4 @@
-from utils import imprime_divisoria
+from utils import imprime_divisoria, soma_valor
 
 def mostrar_menu_principal():
     imprime_divisoria()
@@ -26,12 +26,27 @@ def selecionar_cidades(cidades):
         print("Entrada inválida.")
     
     if origem == "0" or origem == "100":
-        return origem, destino
+        return origem, None
 
     while True:
         destino = input("Escolha o número referente à cidade destino: ")
-        if destino.isdigit() and (0 <= int(destino) <= 10 or int(destino) == 100):
+        if destino.isdigit() and (0 <= int(destino) <= 10 or int(destino) == 100) and origem != destino:
             break
         print("Entrada inválida.")
     
     return origem, destino
+
+def selecionar_caminho(cidades, origem, destino, caminhos):
+    imprime_divisoria()
+    print(f"Voos de {cidades[int(origem)-1]} para {cidades[int(destino)-1]}:\n")
+    for i, (dist, path) in enumerate(caminhos):
+        print(f"{i+1}. Caminho: {' -> '.join(path)} | {dist}km | R$ {soma_valor(dist)}\n")
+    print("0- Encerrar programa\n100- Menu\n")
+
+    while True:
+        escolha = input("Escolha um caminho: ")
+        if escolha.isdigit() and (0 <= int(escolha) <= len(caminhos) or int(escolha) == 100):
+            break
+        print("Entrada inválida.")
+    
+    return escolha
