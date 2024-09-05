@@ -1,11 +1,34 @@
 import socket
+import subprocess
+import time
+
+# FUnção para retornar IP da máquina
+def get_ip_address(interface_name):
+    try:
+        # Executa o comando `ifconfig` e captura a saída
+        result = subprocess.run(
+            ['ifconfig', interface_name],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        # Busca pela linha que contém 'inet ' (IPv4)
+        for line in result.stdout.splitlines():
+            if 'inet ' in line and 'netmask' in line:
+                # Divide a linha para extrair o IP (primeiro após 'inet')
+                ip_address = line.strip().split()[1]
+                return ip_address
+    except subprocess.CalledProcessError:
+        return None
 
 # Função pra configurar o servidor
 def config_server():
     try:
+        ip = get_ip_address('enp3s0f0')
+        print(ip)
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.settimeout(10)  # Define um timeout de 10 segundos
-        server_address = ('localhost', 65435)
+        server_address = (ip, 65433)
         server_socket.bind(server_address)
         server_socket.listen(5)
         print("Aguardando conexão...")
@@ -16,11 +39,11 @@ def config_server():
         return None
 
 # Função para cliente conectar ao servidor
-def conecta_server():
+def conecta_server(ip):
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.settimeout(10)  # Define um timeout de 10 segundos
-        server_address = ('localhost', 65435)
+        server_address = (ip, 65433)
         client_socket.connect(server_address) 
         return client_socket
     
