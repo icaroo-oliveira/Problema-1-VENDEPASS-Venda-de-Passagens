@@ -7,6 +7,8 @@ from connection import conecta_server, enviar_mensagem, receber_mensagem, encerr
 cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória", 
             "São Paulo", "Rio de Janeiro", "Curitiba", "Florianópolis", "Porto Alegre"]
 
+
+ip = '172.16.103.7'
 def start_client():
     while True:
         escolha = mostrar_menu_principal()
@@ -30,7 +32,7 @@ def start_client():
                 break
             
             # Se não conseguir se conectar ao servidor, volta ao menu principal
-            client_socket = conecta_server()
+            client_socket = conecta_server(ip)
             if client_socket is None:
                 go_menu = 1
 
@@ -96,7 +98,7 @@ def start_client():
                     serializa = json.dumps(caminho)
 
                     # Se não conseguir se conectar ao servidor, volta ao menu principal
-                    client_socket = conecta_server()
+                    client_socket = conecta_server(ip)
                     if client_socket is None:
                         go_menu = 1
 
@@ -166,3 +168,12 @@ def start_client():
 
 if __name__ == "__main__":
     start_client()
+
+    #servidor cai, volta pro menu cliente
+    #o client cai durante a comunicacao
+
+
+
+
+
+    #teste do cabo com timer 
