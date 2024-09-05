@@ -1,13 +1,13 @@
 import json
 import time
 from utils import clear_terminal, imprime_divisoria, soma_valor, sleep_clear
-from interface import mostrar_menu_principal, selecionar_cidades
+from interface import mostrar_menu_principal, selecionar_cidades, selecionar_caminho
 from connection import conecta_server, enviar_mensagem, receber_mensagem, encerrar_conexao
 
-def start_client():
-    cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória", 
-               "São Paulo", "Rio de Janeiro", "Curitiba", "Florianópolis", "Porto Alegre"]
+cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória", 
+            "São Paulo", "Rio de Janeiro", "Curitiba", "Florianópolis", "Porto Alegre"]
 
+def start_client():
     while True:
         escolha = mostrar_menu_principal()
 
@@ -56,18 +56,7 @@ def start_client():
 
         while True:
             if caminhos:
-                imprime_divisoria()
-                print(f"Voos de {cidades[int(origem)-1]} para {cidades[int(destino)-1]}:\n")
-                for i, (dist, path) in enumerate(caminhos):
-                    print(f"{i+1}. Caminho: {' -> '.join(path)} | {dist}km | R$ {soma_valor(dist)}\n")
-
-                print("0- Encerrar programa\n100- Menu\n")
-
-                while True:
-                    escolha = input("Escolha um caminho: ")
-                    if escolha.isdigit() and (0 <= int(escolha) <= len(caminhos) or int(escolha) == 100):
-                        break
-                    print("Entrada inválida.")
+                escolha = selecionar_caminho(cidades, origem, destino, caminhos)
 
                 if escolha == "0":
                     encerrar = 1
