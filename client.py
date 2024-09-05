@@ -14,90 +14,123 @@ def start_client():
         if escolha == '0':
             break
         
-        origem, destino = selecionar_cidades(cidades)
-        if origem == "0" or destino == "0":
-            break
-        if origem == "100" or destino == "100":
-            clear_terminal()
-            continue
-        
-        # Se não conseguir se conectar ao servidor, volta ao menu principal
-        client_socket = conecta_server()
-        if client_socket is None:
-            sleep_clear(3)
-            continue
+        sair = 0
+        go_menu = 0
 
-        mensagem = f"0,{origem},{destino},,"
+        while True:
+            origem, destino = selecionar_cidades(cidades)
+            if origem == "0" or destino == "0":
+                sair = 1
+                break
+            if origem == "100" or destino == "100":
+                # Volta pro menu principal
+                go_menu = 1
+                
+                clear_terminal()
+                break
+            
+            # Se não conseguir se conectar ao servidor, volta ao menu principal
+            client_socket = conecta_server()
+            if client_socket is None:
+                go_menu = 1
+
+                sleep_clear(3)
+                break
+
+            mensagem = f"0,{origem},{destino},,"
+            
+            # Se não enviar ou receber dados, encerra conexão automaticamente e volta a escolha das cidades ( tenta reenviar/receber os dados )
+            data = enviar_mensagem(client_socket, mensagem)
+            if data is None:
+                sleep_clear(3)
+                continue
+            
+            data = receber_mensagem(client_socket)
+            if data is None:
+                sleep_clear(3)
+                continue
+            
+            # Depois de enviar e receber o dado, encerra conexão e sai do loop
+            encerrar_conexao(client_socket)
+            break
         
-        # Se não enviar ou receber dados, encerra conexão automaticamente e volta ao menu principal
-        data = enviar_mensagem(client_socket, mensagem)
-        if data is None:
-            sleep_clear(3)
+        # Volta pro menu principal
+        if go_menu:
             continue
         
-        data = receber_mensagem(client_socket)
-        if data is None:
-            sleep_clear(3)
-            continue
-        
-        # Depois de enviar e receber o dado, encerra conexão
-        encerrar_conexao(client_socket)
+        # Fecha o programa
+        if sair:
+            break
 
         flag, dado = data.decode('utf-8').split(',', 1)
 
         if flag == "-1":
             imprime_divisoria()
             print("Servidor não identificou a operação solicitada. Encerrando aplicação...")
+
             time.sleep(4)
             break
 
         caminhos = json.loads(dado)
-        encerrar = 0
+        
+        sair = 0
+        go_menu = 0
 
         while True:
             if caminhos:
-                escolha = selecionar_caminho(cidades, origem, destino, caminhos)
+                while True:
+                    escolha = selecionar_caminho(cidades, origem, destino, caminhos)
 
-                if escolha == "0":
-                    encerrar = 1
+                    if escolha == "0":
+                        sair = 1
+                        break
+                    
+                    if escolha == "100":
+                        go_menu = 1
+
+                        clear_terminal()
+                        break
+                    
+                    caminho = caminhos[int(escolha)-1]
+                    id = input("Digite seu CPF para registro da compra (apenas os números): ")
+                    serializa = json.dumps(caminho)
+
+                    # Se não conseguir se conectar ao servidor, volta ao menu principal
+                    client_socket = conecta_server()
+                    if client_socket is None:
+                        go_menu = 1
+
+                        sleep_clear(3)
+                        break
+
+                    mensagem = f"1,{origem},{destino},{id},{serializa}"
+
+                    # Se não enviar ou receber dados, encerra conexão automaticamente e volta para escolha do caminho
+                    data = enviar_mensagem(client_socket, mensagem)
+                    if data is None:
+                        time.sleep(3)
+                        continue
+
+                    data = receber_mensagem(client_socket)
+                    if data is None:
+                        time.sleep(3)
+                        continue
+                    
+                    # Depois de enviar e receber o dado, encerra conexão
+                    encerrar_conexao(client_socket)
                     break
                 
-                if escolha == "100":
-                    clear_terminal()
+                # se escolheu sair ou ir pro menu principal, sai do while
+                if sair or go_menu:
                     break
-                
-                caminho = caminhos[int(escolha)-1]
-                id = input("Digite seu CPF para registro da compra (apenas os números): ")
-                serializa = json.dumps(caminho)
-
-                # Se não conseguir se conectar ao servidor, volta ao menu principal
-                client_socket = conecta_server()
-                if client_socket is None:
-                    sleep_clear(3)
-                    break
-
-                mensagem = f"1,{origem},{destino},{id},{serializa}"
-
-                # Se não enviar ou receber dados, encerra conexão automaticamente e volta para escolha do caminho
-                data = enviar_mensagem(client_socket, mensagem)
-                if data is None:
-                    time.sleep(3)
-                    continue
-
-                data = receber_mensagem(client_socket)
-                if data is None:
-                    time.sleep(3)
-                    continue
-                
-                # Depois de enviar e receber o dado, encerra conexão
-                encerrar_conexao(client_socket)
 
                 flag, dado = data.decode('utf-8').split(',', 1)
 
                 if flag == "-1":
                     imprime_divisoria()
                     print("Servidor não identificou a operação solicitada. Encerrando aplicação...")
-                    encerrar = 1
+                    sair = 1
+
                     time.sleep(4)
                     break
 
@@ -113,6 +146,7 @@ def start_client():
                     caminhos = json.loads(dado)
                     imprime_divisoria()
                     print("Caminho escolhido não mais disponível!")
+
                     time.sleep(2)
 
             else:
@@ -122,8 +156,8 @@ def start_client():
 
                 sleep_clear(5)
                 break
-
-        if encerrar == 1:
+        
+        if sair:
             break
     
     imprime_divisoria()
