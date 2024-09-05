@@ -92,8 +92,9 @@ def handle_client(liga_socket, client_address):
         #    time.sleep(20)
 
         data = receber_mensagem(liga_socket)
+
         cont+=1
-        if data:
+        if data != None:
             flag, origem, destino, id, caminho = data.decode('utf-8').split(',', 4)
             origem = cidades[int(origem) - 1]
             destino = cidades[int(destino) - 1]
@@ -109,6 +110,7 @@ def handle_client(liga_socket, client_address):
                     serializa = json.dumps(caminhos)
 
                     mensagem = f"0,{serializa}"
+                    
                     data = enviar_mensagem(liga_socket, mensagem)
                     if data:
                         print("Caminhos enviados com sucesso")
@@ -121,6 +123,7 @@ def handle_client(liga_socket, client_address):
                 comprar = True
                 
                 with lock:
+                    #FileNotFoundError: [Errno 2] No such file or directory: 'grafo.json'
                     G = carregar_grafo(arquivo_grafo)
 
                     for i in range(len(caminho[1]) - 1):
