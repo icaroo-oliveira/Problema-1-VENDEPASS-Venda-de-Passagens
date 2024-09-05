@@ -43,7 +43,15 @@ def start_client():
         # Depois de enviar e receber o dado, encerra conexão
         encerrar_conexao(client_socket)
 
-        caminhos = json.loads(data.decode('utf-8'))
+        flag, dado = data.decode('utf-8').split(',', 1)
+
+        if flag == "-1":
+            imprime_divisoria()
+            print("Servidor não identificou a operação solicitada. Encerrando aplicação...")
+            time.sleep(4)
+            break
+
+        caminhos = json.loads(dado)
         encerrar = 0
 
         while True:
@@ -95,8 +103,16 @@ def start_client():
                 # Depois de enviar e receber o dado, encerra conexão
                 encerrar_conexao(client_socket)
 
-                flag, lista = data.decode('utf-8').split(',', 1)
-                if flag == '0':
+                flag, dado = data.decode('utf-8').split(',', 1)
+
+                if flag == "-1":
+                    imprime_divisoria()
+                    print("Servidor não identificou a operação solicitada. Encerrando aplicação...")
+                    encerrar = 1
+                    time.sleep(4)
+                    break
+
+                elif flag == '2':
                     imprime_divisoria()
                     print("Compra feita com sucesso!")
                     imprime_divisoria()
@@ -105,7 +121,7 @@ def start_client():
                     break
 
                 elif flag == '1':
-                    caminhos = json.loads(lista)
+                    caminhos = json.loads(dado)
                     imprime_divisoria()
                     print("Caminho escolhido não mais disponível!")
                     time.sleep(2)

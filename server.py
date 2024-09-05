@@ -108,7 +108,8 @@ def handle_client(liga_socket, client_address):
                     caminhos = encontrar_caminhos(G, origem, destino)
                     serializa = json.dumps(caminhos)
 
-                    data = enviar_mensagem(liga_socket, serializa)
+                    mensagem = f"0,{serializa}"
+                    data = enviar_mensagem(liga_socket, mensagem)
                     if data:
                         print("Caminhos enviados com sucesso")
 
@@ -142,12 +143,19 @@ def handle_client(liga_socket, client_address):
                             G[trecho[0]][trecho[1]]['assentos'] -= 1
                             G[trecho[0]][trecho[1]]['id'].append(id)
                         salvar_grafo(G, arquivo_grafo)
-                        mensagem = f"0,"
+                        mensagem = f"2,"
                         
                         data = enviar_mensagem(liga_socket, mensagem)
                         if data:
                             print("Compra feita")
-                    
+                
+            else:
+                print("Operação não identificada.")
+                mensagem = f"-1,"
+                data = enviar_mensagem(liga_socket, mensagem)
+                if data:
+                    print("Operação não identificada informada ao cliente.")
+        
     finally:
         encerrar_conexao(liga_socket)
         print("\nConexão encerrada. Aguardando nova conexão...\n")
