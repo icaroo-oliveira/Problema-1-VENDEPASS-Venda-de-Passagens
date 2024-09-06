@@ -1,4 +1,3 @@
-import socket
 import threading
 import json
 import time
@@ -96,12 +95,9 @@ def start_server():
         # Retorna socket do cliente e seu endereço IP
         try:
             liga_socket, client_address = server_socket.accept()
+            liga_socket.settimeout(10)  # Define um timeout de 10 segundos
             client_thread = threading.Thread(target=handle_client, args=(liga_socket, client_address))
             client_thread.start()
-        
-        # Se acontecer timeout, ou seja, ninguem se conectar em 10 segundos, não acontece nada, continua esperando
-        except socket.timeout:
-            None
 
         # Se não conseguir se conectar com um cliente, volta a procurar conexões
         except (OSError, Exception) as e:

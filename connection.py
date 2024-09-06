@@ -30,7 +30,6 @@ def config_server():
     print(ip)
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_address = (ip, 65433)
-    server_socket.settimeout(10)  # Define um timeout de 10 segundos
 
     try:
         server_socket.bind(server_address)
@@ -89,6 +88,7 @@ def encerrar_conexao(new_socket):
     except (OSError, Exception) as e:
         print(f"Erro ao fechar o socket: {e}")
 
+# Função para enviar e receber mensagem
 def enviar_e_receber_mensagem(client_socket, mensagem):
     data = enviar_mensagem(client_socket, mensagem)
     if data is None:

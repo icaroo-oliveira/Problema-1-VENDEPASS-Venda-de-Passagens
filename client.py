@@ -38,7 +38,7 @@ def start_client():
                 break
 
             mensagem = f"Caminhos,{origem},{destino},,"
-            
+
             # Se não enviar ou receber dados, encerra conexão automaticamente e volta a escolha das cidades ( tenta reenviar/receber os dados )
             data = enviar_e_receber_mensagem(client_socket, mensagem)
             if data is None:
