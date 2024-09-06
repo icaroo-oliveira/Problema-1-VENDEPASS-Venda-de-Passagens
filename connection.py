@@ -1,8 +1,7 @@
 import socket
 import subprocess
-import time
 
-# FUnção para retornar IP da máquina
+# Função para retornar IP da máquina
 def get_ip_address(interface_name):
     try:
         # Executa o comando `ifconfig` e captura a saída
@@ -12,23 +11,28 @@ def get_ip_address(interface_name):
             text=True,
             check=True
         )
+
         # Busca pela linha que contém 'inet ' (IPv4)
         for line in result.stdout.splitlines():
             if 'inet ' in line and 'netmask' in line:
                 # Divide a linha para extrair o IP (primeiro após 'inet')
                 ip_address = line.strip().split()[1]
                 return ip_address
+    
     except subprocess.CalledProcessError:
         return None
 
 # Função pra configurar o servidor
 def config_server():
+    #ip = get_ip_address('enp3s0f0')
+    ip = 'localhost'
+
+    print(ip)
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_address = (ip, 65433)
+    server_socket.settimeout(10)  # Define um timeout de 10 segundos
+
     try:
-        ip = get_ip_address('enp3s0f0')
-        print(ip)
-        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.settimeout(10)  # Define um timeout de 10 segundos
-        server_address = (ip, 65433)
         server_socket.bind(server_address)
         server_socket.listen(5)
         print("Aguardando conexão...")
@@ -40,10 +44,11 @@ def config_server():
 
 # Função para cliente conectar ao servidor
 def conecta_server(ip):
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_address = (ip, 65433)
+    client_socket.settimeout(10)  # Define um timeout de 10 segundos
+    
     try:
-        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client_socket.settimeout(10)  # Define um timeout de 10 segundos
-        server_address = (ip, 65433)
         client_socket.connect(server_address) 
         return client_socket
     
@@ -58,7 +63,7 @@ def enviar_mensagem(new_socket, mensagem):
         return 1
     
     # conexão encerrada, conexão demorou muito, outro erro qualquer
-    except (socket.error, socket.timeout, Exception) as e:
+    except (OSError, socket.timeout, Exception) as e:
         print(f"Erro no envio de dados: {e}. Retornando ...")
         encerrar_conexao(new_socket)
         return None
@@ -83,3 +88,10 @@ def encerrar_conexao(new_socket):
     # tentar fechar socket ja fechado
     except (OSError, Exception) as e:
         print(f"Erro ao fechar o socket: {e}")
+
+def enviar_e_receber_mensagem(client_socket, mensagem):
+    data = enviar_mensagem(client_socket, mensagem)
+    if data is None:
+        return None
+
+    return receber_mensagem(client_socket)

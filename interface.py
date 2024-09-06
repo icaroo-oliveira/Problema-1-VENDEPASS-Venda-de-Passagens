@@ -1,4 +1,4 @@
-from utils import imprime_divisoria, soma_valor
+from utils_client import imprime_divisoria, soma_valor
 
 def mostrar_menu_principal():
     imprime_divisoria()

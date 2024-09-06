@@ -1,14 +1,12 @@
 import json
 import time
-from utils import clear_terminal, imprime_divisoria, soma_valor, sleep_clear
+from utils_client import clear_terminal, imprime_divisoria, sleep_clear, cidades
 from interface import mostrar_menu_principal, selecionar_cidades, selecionar_caminho
-from connection import conecta_server, enviar_mensagem, receber_mensagem, encerrar_conexao
+from connection import conecta_server, encerrar_conexao, enviar_e_receber_mensagem
 
-cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória", 
-            "São Paulo", "Rio de Janeiro", "Curitiba", "Florianópolis", "Porto Alegre"]
+#ip = '172.16.103.7'
+ip = 'localhost'
 
-
-ip = '172.16.103.7'
 def start_client():
     while True:
         escolha = mostrar_menu_principal()
@@ -39,15 +37,10 @@ def start_client():
                 sleep_clear(3)
                 break
 
-            mensagem = f"0,{origem},{destino},,"
+            mensagem = f"Caminhos,{origem},{destino},,"
             
             # Se não enviar ou receber dados, encerra conexão automaticamente e volta a escolha das cidades ( tenta reenviar/receber os dados )
-            data = enviar_mensagem(client_socket, mensagem)
-            if data is None:
-                sleep_clear(3)
-                continue
-            
-            data = receber_mensagem(client_socket)
+            data = enviar_e_receber_mensagem(client_socket, mensagem)
             if data is None:
                 sleep_clear(3)
                 continue
@@ -66,7 +59,7 @@ def start_client():
 
         flag, dado = data.decode('utf-8').split(',', 1)
 
-        if flag == "-1":
+        if flag == "Flag_Invalida":
             imprime_divisoria()
             print("Servidor não identificou a operação solicitada. Encerrando aplicação...")
 
@@ -105,17 +98,12 @@ def start_client():
                         sleep_clear(3)
                         break
 
-                    mensagem = f"1,{origem},{destino},{id},{serializa}"
+                    mensagem = f"Comprar,{origem},{destino},{id},{serializa}"
 
                     # Se não enviar ou receber dados, encerra conexão automaticamente e volta para escolha do caminho
-                    data = enviar_mensagem(client_socket, mensagem)
+                    data = enviar_e_receber_mensagem(client_socket, mensagem)
                     if data is None:
-                        time.sleep(3)
-                        continue
-
-                    data = receber_mensagem(client_socket)
-                    if data is None:
-                        time.sleep(3)
+                        sleep_clear(3)
                         continue
                     
                     # Depois de enviar e receber o dado, encerra conexão
@@ -128,7 +116,7 @@ def start_client():
 
                 flag, dado = data.decode('utf-8').split(',', 1)
 
-                if flag == "-1":
+                if flag == "Flag_Invalida":
                     imprime_divisoria()
                     print("Servidor não identificou a operação solicitada. Encerrando aplicação...")
                     sair = 1
@@ -136,7 +124,7 @@ def start_client():
                     time.sleep(4)
                     break
 
-                elif flag == '2':
+                elif flag == "Compra_Feita":
                     imprime_divisoria()
                     print("Compra feita com sucesso!")
                     imprime_divisoria()
@@ -144,7 +132,7 @@ def start_client():
                     sleep_clear(5)
                     break
 
-                elif flag == '1':
+                elif flag == "Novos_Caminhos":
                     caminhos = json.loads(dado)
                     imprime_divisoria()
                     print("Caminho escolhido não mais disponível!")
@@ -168,12 +156,3 @@ def start_client():
 
 if __name__ == "__main__":
     start_client()
-
-    #servidor cai, volta pro menu cliente
-    #o client cai durante a comunicacao
-
-
-
-
-
-    #teste do cabo com timer 

@@ -2,6 +2,9 @@ import os
 import platform
 import time
 
+cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória", 
+            "São Paulo", "Rio de Janeiro", "Curitiba", "Florianópolis", "Porto Alegre"]
+
 def clear_terminal():
     if platform.system() == 'Windows':
         os.system('cls')
