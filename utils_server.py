@@ -7,6 +7,7 @@ cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória",
 
 arquivo_grafo = 'grafo.json'
 
+# Função para quando abrir servidor, carregar ou criar o grafo
 def cria_arquivo_grafo():
     # Carregando o grafo a partir do arquivo JSON
     try:
@@ -82,6 +83,7 @@ def cria_arquivo_grafo():
         # dessas chaves são as informações desses dados
         salvar_grafo(G, arquivo_grafo)
 
+# Função que carrega um grafo do arquivo
 def carregar_grafo(arquivo):
     # Abre arquivo e retorna os dados do grafo
     with open(arquivo, 'r') as arq:
@@ -101,8 +103,8 @@ def carregar_grafo(arquivo):
     
     return grafo
 
+# Função que salva um grafo no arquivo (atualiza)
 def salvar_grafo(grafo, arquivo):
-
     # Novo grafo a ser salvo em arquivo
     dados_novos = {'trecho': []}
 
@@ -120,10 +122,11 @@ def salvar_grafo(grafo, arquivo):
     with open(arquivo, 'w') as arq:
         json.dump(dados_novos, arq, indent=4)
 
+# Função que encontra 10 caminhos entre origem e destino, e retorna ordenado considerando distancia total (menor ao maior)
 def encontrar_caminhos(grafo, cidade_inicial, cidade_fim):
     caminhos = []
     
-    # Retorna todos os caminhos possíveis entre v1 e v2
+    # Retorna todos os caminhos possíveis entre origem e destino
     for path in nx.all_simple_paths(grafo, source=cidade_inicial, target=cidade_fim):
 
         # Verifica se algum trecho do caminho encontrado não possui assentos

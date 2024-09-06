@@ -1,5 +1,6 @@
 from utils_client import imprime_divisoria, soma_valor
 
+# Função que exibe em tela menu principal e suas opções
 def mostrar_menu_principal():
     imprime_divisoria()
     print("\t\t\t\t\tSistema de Vendas de Passagens")
@@ -12,6 +13,7 @@ def mostrar_menu_principal():
     
     return escolha
 
+# Função que exibe em tela menu de escolha de origem e destino
 def selecionar_cidades(cidades):
     imprime_divisoria()
     print("Cidades disponíveis:\n")
@@ -25,7 +27,7 @@ def selecionar_cidades(cidades):
             break
         print("Entrada inválida.")
     
-    if origem == "0" or origem == "100":
+    if origem in ["0", "100"]:
         return origem, None
 
     while True:
@@ -36,6 +38,7 @@ def selecionar_cidades(cidades):
     
     return origem, destino
 
+# Função que exibe em tela caminhos encontrados de origem a destino
 def selecionar_caminho(cidades, origem, destino, caminhos):
     imprime_divisoria()
     print(f"Voos de {cidades[int(origem)-1]} para {cidades[int(destino)-1]}:\n")
