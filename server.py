@@ -1,7 +1,7 @@
 import threading
 import json
 import time
-from connection import config_server, receber_mensagem, enviar_mensagem, encerrar_conexao
+from connection import config_server, receber_mensagem, encerrar_conexao, testa_conexao_com_cliente
 from utils_server import cria_arquivo_grafo, carregar_grafo, salvar_grafo, encontrar_caminhos, cidades, arquivo_grafo
 
 lock = threading.Lock()
@@ -28,10 +28,9 @@ def handle_client(liga_socket, client_address):
                     serializa = json.dumps(caminhos)
 
                     mensagem = f"0,{serializa}"
-                    
-                    data = enviar_mensagem(liga_socket, mensagem)
-                    if data:
-                        print("Caminhos enviados com sucesso")
+
+                    testa_conexao_com_cliente(liga_socket, mensagem, "Caminhos enviados com sucesso")
+
 
             elif flag == "Comprar":
                 print(f"Recebido a flag: {flag}")
@@ -51,9 +50,7 @@ def handle_client(liga_socket, client_address):
                             serializa = json.dumps(caminhos)
                             mensagem = f"Novos_Caminhos,{serializa}"
 
-                            data = enviar_mensagem(liga_socket, mensagem)
-                            if data:
-                                print("Novos caminhos enviados com sucesso")
+                            testa_conexao_com_cliente(liga_socket, mensagem, "Novos caminhos enviados com sucesso")
 
                             break
 
@@ -64,17 +61,14 @@ def handle_client(liga_socket, client_address):
                             G[trecho[0]][trecho[1]]['id'].append(id)
                         salvar_grafo(G, arquivo_grafo)
                         mensagem = f"Compra_Feita,"
-                        
-                        data = enviar_mensagem(liga_socket, mensagem)
-                        if data:
-                            print("Compra feita")
-                
+
+                        testa_conexao_com_cliente(liga_socket, mensagem, "Compra feita")
+
             else:
                 print("Operação não identificada.")
                 mensagem = f"Flag_Invalida,"
-                data = enviar_mensagem(liga_socket, mensagem)
-                if data:
-                    print("Operação não identificada informada ao cliente.")
+
+                testa_conexao_com_cliente(liga_socket, mensagem, "Operação não identificada informada ao cliente.")
         
     finally:
         encerrar_conexao(liga_socket)

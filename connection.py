@@ -95,3 +95,27 @@ def enviar_e_receber_mensagem(client_socket, mensagem):
         return None
 
     return receber_mensagem(client_socket)
+
+# Função para servidor verificar se ainda tem conexão com o cliente, antes de enviar dados (evita enviar dados atoa)
+# Caso conexão caia por parte do cliente e servidor não envie dado para lugar algum
+def testa_conexao_com_cliente(liga_socket, mensagem, print_msg):
+    liga_socket.setblocking(False)
+    try:
+        # Tenta ler do socket para verificar se o cliente fechou a conexão
+        data = liga_socket.recv(1024)
+        
+        # Se não fechou, envia mensagem
+        if data != b'':
+            liga_socket.setblocking(True)
+            data = enviar_mensagem(liga_socket, mensagem)
+            if data:
+                print(print_msg)
+        
+        else:
+            print("Conexão com cliente foi encerrada antes de enviar dados.")
+    # Caso conexão esteja open, mas cliente não tem dado a enviar ( ta esperando o servidor retornar )
+    except BlockingIOError:
+        liga_socket.setblocking(True)  # Volta ao modo bloqueante para enviar
+        data = enviar_mensagem(liga_socket, mensagem)
+        if data:
+            print(print_msg)
