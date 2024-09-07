@@ -34,17 +34,15 @@ def start_client():
                 clear_terminal()
                 break
             
-            # Se não conseguir se conectar ao servidor, volta ao menu principal
+            # Se não conseguir se conectar ao servidor, volta a escolha das cidades
             client_socket = conecta_server(ip)
             if client_socket is None:
-                menu = 1
-
                 sleep_clear(3)
-                break
+                continue
 
             mensagem = f"Caminhos,{origem},{destino},,"
 
-            # Se não enviar ou receber dados, encerra conexão automaticamente e volta a escolha das cidades ( tenta reenviar/receber os dados )
+            # Se não enviar ou receber dados, encerra conexão automaticamente e volta a escolha das cidades
             data = enviar_e_receber_mensagem(client_socket, mensagem)
             if data is None:
                 sleep_clear(3)
@@ -100,13 +98,11 @@ def start_client():
                     id = input("Digite seu CPF para registro da compra (apenas os números): ")
                     serializa = json.dumps(caminho)
 
-                    # Se não conseguir se conectar ao servidor, volta ao menu principal
+                    # Se não conseguir se conectar ao servidor, volta para escolha do caminho
                     client_socket = conecta_server(ip)
                     if client_socket is None:
-                        menu = 1
-
                         sleep_clear(3)
-                        break
+                        continue
 
                     mensagem = f"Comprar,{origem},{destino},{id},{serializa}"
 

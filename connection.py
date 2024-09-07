@@ -52,7 +52,7 @@ def conecta_server(ip):
         return client_socket
     
     except (OSError, socket.timeout, Exception) as e:
-        print(f"Erro ao conectar ao servidor: {e}")
+        print(f"Erro ao conectar ao servidor: {e}. Retornando...")
         return None
 
 # Função para enviar dados de cliente pra servidor ou o contrario
