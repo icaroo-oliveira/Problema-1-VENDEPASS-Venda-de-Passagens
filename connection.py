@@ -33,7 +33,7 @@ def config_server():
 
     try:
         server_socket.bind(server_address)
-        server_socket.listen(5)
+        server_socket.listen(50)
         print("Aguardando conexão...")
         return server_socket
     
