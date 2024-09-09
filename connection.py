@@ -23,18 +23,13 @@ def get_ip_address(interface_name):
         return None
 
 # Função pra configurar o socket do servidor
-def config_server():
-    #ip = get_ip_address('enp3s0f0')
-    ip = 'localhost'
-
-    print(ip)
+def config_server(ip, porta):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_address = (ip, 65433)
+    server_address = (ip, porta)
 
     try:
         server_socket.bind(server_address)
         server_socket.listen(50)
-        print("Aguardando conexão...")
         return server_socket
     
     except (OSError, Exception) as e:
@@ -42,9 +37,9 @@ def config_server():
         return None
 
 # Função para cliente conectar ao servidor ( cria socket do cliente )
-def conecta_server(ip):
+def conecta_server(ip, porta):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_address = (ip, 65433)
+    server_address = (ip, porta)
     
     try:
         client_socket.settimeout(10)  # Define um timeout de 10 segundos

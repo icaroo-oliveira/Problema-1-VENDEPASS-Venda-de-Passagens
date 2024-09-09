@@ -1,7 +1,12 @@
 import threading
 import json
-from connection import config_server, receber_mensagem, encerrar_conexao, testa_conexao_com_cliente
+from connection import config_server, receber_mensagem, encerrar_conexao, testa_conexao_com_cliente, get_ip_address
 from utils_server import cria_arquivo_grafo, carregar_grafo, salvar_grafo, encontrar_caminhos, cidades, arquivo_grafo
+
+#ip = get_ip_address('enp3s0f0')
+ip = 'localhost'
+
+porta = 65433
 
 # Mutex para impedir que mais de uma thread acesse uma região crítica
 lock = threading.Lock()
@@ -105,10 +110,14 @@ def start_server():
     cria_arquivo_grafo()
 
     # Se não conseguir criar e configurar servidor, encerra programa
-    server_socket = config_server()
+    server_socket = config_server(ip, porta)
     if server_socket is None:
         print("Erro ao iniciar o servidor. Encerrando aplicação.")
         return
+    
+    # Retorna IP e Porta associada ao socket do servidor
+    print(f"\nServidor -> IP: {server_socket.getsockname()[0]}  |  Porta: {server_socket.getsockname()[1]}\n")
+    print("Aguardando conexão...")
 
     # Fica procurando solicitações de conexão constantemente
     while True:

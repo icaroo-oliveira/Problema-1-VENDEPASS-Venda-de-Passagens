@@ -7,6 +7,8 @@ from connection import conecta_server, encerrar_conexao, enviar_e_receber_mensag
 #ip = '172.16.103.7'
 ip = 'localhost'
 
+porta = 65433
+
 def start_client():
     while True:
         escolha = mostrar_menu_principal()
@@ -35,7 +37,7 @@ def start_client():
                 break
             
             # Se não conseguir se conectar ao servidor, volta a escolha das cidades
-            client_socket = conecta_server(ip)
+            client_socket = conecta_server(ip, porta)
             if client_socket is None:
                 sleep_clear(3)
                 continue
@@ -99,7 +101,7 @@ def start_client():
                     serializa = json.dumps(caminho)
 
                     # Se não conseguir se conectar ao servidor, volta para escolha do caminho
-                    client_socket = conecta_server(ip)
+                    client_socket = conecta_server(ip, porta)
                     if client_socket is None:
                         sleep_clear(3)
                         continue
