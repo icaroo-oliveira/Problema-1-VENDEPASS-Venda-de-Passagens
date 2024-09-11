@@ -42,7 +42,8 @@ def selecionar_cidades(cidades):
 # Função que exibe em tela caminhos encontrados de origem a destino
 def selecionar_caminho(cidades, origem, destino, caminhos):
     imprime_divisoria()
-    print(f"Voos de {cidades[int(origem)-1]} para {cidades[int(destino)-1]}:\n")
+    
+    print(f"Trechos de {cidades[int(origem)-1]} para {cidades[int(destino)-1]}:\n")
     for i, (dist, path) in enumerate(caminhos):
         print(f"{i+1}. Caminho: {' -> '.join(path)} | {dist}km | R$ {soma_valor(dist)}\n")
     print("0- Encerrar programa\n100- Menu\n")
@@ -52,8 +53,17 @@ def selecionar_caminho(cidades, origem, destino, caminhos):
         if escolha.isdigit() and (0 <= int(escolha) <= len(caminhos) or int(escolha) == 100):
             break
         print("Entrada inválida.")
+
+    if escolha in ["0", "100"]:
+        return escolha, None
     
-    return escolha
+    while True:
+        cpf = input("Digite seu CPF para registro da compra (apenas os números): ")
+        if cpf.isdigit() and int(cpf) not in (0, 100):
+            break
+        print("Entrada inválida. Apenas números diferentes de 0 e 100!")
+    
+    return escolha, cpf
 
 # Função que exibe em tela menu de escolha de cpf para ter acesso as passagens compradas
 def verificar_passagens_compradas():

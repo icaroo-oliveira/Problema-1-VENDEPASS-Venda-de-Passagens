@@ -75,16 +75,13 @@ def start_client():
                 break
 
             caminhos = json.loads(dado)
-            
-            sair = 0
-            menu = 0
 
             while True:
                 if caminhos:
                     # Caso cliente não consiga enviar ou receber dados do servidor, ele escolhe caminho e cpf de novo e tenta
                     # enviar ou receber os dados novamente
                     while True:
-                        escolha = selecionar_caminho(cidades, origem, destino, caminhos)
+                        escolha, cpf = selecionar_caminho(cidades, origem, destino, caminhos)
 
                         # Encerra aplicação
                         if escolha == "0":
@@ -100,12 +97,6 @@ def start_client():
                         
                         caminho = caminhos[int(escolha)-1]
                         serializa = json.dumps(caminho)
-
-                        while True:
-                            cpf = input("Digite seu CPF para registro da compra (apenas os números): ")
-                            if cpf.isdigit():
-                                break
-                            print("Entrada inválida. Apenas números!")
 
                         # Se não conseguir se conectar ao servidor, volta para escolha do caminho
                         client_socket = conecta_server(ip, porta)
