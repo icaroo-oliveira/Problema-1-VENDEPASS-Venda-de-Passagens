@@ -1,7 +1,7 @@
 import threading
 import json
 from connection import config_server, receber_mensagem, encerrar_conexao, testa_conexao_com_cliente, get_ip_address
-from utils_server import cria_arquivo_grafo, carregar_grafo, salvar_grafo, encontrar_caminhos, cidades, arquivo_grafo
+from utils_server import cria_arquivo_grafo, carregar_grafo, encontrar_caminhos, verifica_compras_cpf, verifica_caminho_escolhido, registra_caminho_escolhido, cidades
 
 #ip = get_ip_address('enp3s0f0')
 ip = 'localhost'
@@ -22,12 +22,13 @@ def handle_client(conexao_socket, client_address):
         # Se receber algum dado, opera
         # Se não receber nenhum dado, vai pro finally e encerra conexão
         if data:
-            flag, origem, destino, id, caminho = data.decode('utf-8').split(',', 4)
-            origem = cidades[int(origem) - 1]
-            destino = cidades[int(destino) - 1]
+            flag, origem, destino, cpf, caminho = data.decode('utf-8').split(',', 4)
             
             # Se cliente enviou flag Caminhos, servidor retorna caminhos de origem a destino
             if flag == "Caminhos":
+                origem = cidades[int(origem) - 1]
+                destino = cidades[int(destino) - 1]
+
                 print(f"Recebido a flag: {flag}")
                 print(f"Recebido a origem: {origem}")
                 print(f"Recebido o destino: {destino}")
@@ -35,7 +36,7 @@ def handle_client(conexao_socket, client_address):
                 # Região crítica - Outra thread não pode mexer no arquivo enquanto tiver carregando informação do arquivo e
                 # enviando ao cliente
                 with lock:
-                    G = carregar_grafo(arquivo_grafo)
+                    G = carregar_grafo()
                     caminhos = encontrar_caminhos(G, origem, destino)
                     serializa = json.dumps(caminhos)
 
@@ -48,58 +49,76 @@ def handle_client(conexao_socket, client_address):
             # Se cliente enviou flag Comprar, servidor retorna sucesso de compra ou novos caminhos
             elif flag == "Comprar":
                 print(f"Recebido a flag: {flag}")
-                print(f"Recebido {caminho}, {id}")
-                caminho = json.loads(caminho)
+                print(f"Recebido o caminho: {caminho}")
+                print(f"Recebido o cpf: {cpf}")
 
-                comprar = True
+                caminho = json.loads(caminho)
+                
+                # Primeiro item da lista = origem
+                origem = caminho[1][0]
+
+                # Ultimo item da lista = destino
+                destino = caminho[1][len(caminho[1]) - 1]
                 
                 # Região crítica - Outra thread não pode mexer no arquivo enquanto tiver carregando informação do arquivo ou
                 # gravando informação nele, e enviando ao cliente
                 with lock:
                     # Pega informação atual do grafo
-                    G = carregar_grafo(arquivo_grafo)
+                    G = carregar_grafo()
 
-                    # Verifica se caminho escolhido pelo cliente ainda ta disponível (compara com grafo atual)
-                    for i in range(len(caminho[1]) - 1):
-                        trecho = (caminho[1][i], caminho[1][i + 1])
-
-                        # Se algum trecho do caminho escolhido pelo cliente não tiver mais assento
-                        # encontra e retorna novos caminhos para ele (grafo atualizado)
-                        if G[trecho[0]][trecho[1]]['assentos'] == 0:
-                            comprar = False
-                            caminhos = encontrar_caminhos(G, origem, destino)
-                            serializa = json.dumps(caminhos)
-                            mensagem = f"Novos_Caminhos,{serializa}"
-
-                            # Verifica se cliente deu close() (encerrou conexão)
-                            # Se não encerrou, envia os novos caminhos encontrados
-                            testa_conexao_com_cliente(conexao_socket, mensagem, "Novos caminhos enviados com sucesso")
-
-                            break
+                    # Verifica se caminho ainda ta disponível
+                    comprar = verifica_caminho_escolhido(G, caminho)
                     
-                    # Se todos os trechos do caminho escolhido pelo cliente estiverem ainda disponíveis
-                    # no grafo atualizado, registra compra e atualiza o grafo
-                    if comprar:
-                        for i in range(len(caminho[1]) - 1):
-                            trecho = (caminho[1][i], caminho[1][i + 1])
-                            G[trecho[0]][trecho[1]]['assentos'] -= 1
-                            G[trecho[0]][trecho[1]]['id'].append(id)
-                        salvar_grafo(G, arquivo_grafo)
+                    # Se retornou false, caminho não ta mais disponível
+                    # encontra e retorna novos caminhos para cliente (grafo atualizado)
+                    if comprar == False:
+                        caminhos = encontrar_caminhos(G, origem, destino)
+                        serializa = json.dumps(caminhos)
+                        mensagem = f"Novos_Caminhos,{serializa}"
+
+                        # Verifica se cliente deu close() (encerrou conexão)
+                        # Se não encerrou, envia os novos caminhos encontrados
+                        testa_conexao_com_cliente(conexao_socket, mensagem, "Novos caminhos enviados com sucesso")
+                    
+                    # Se retornou true, caminho ta disponível
+                    else:
+                        # Registra compra
+                        registra_caminho_escolhido(G, caminho, cpf)
+
                         mensagem = f"Compra_Feita,"
 
                         # Verifica se cliente deu close() (encerrou conexão)
                         # Se não encerrou, envia informação indicando exito na compra
-                        testa_conexao_com_cliente(conexao_socket, mensagem, "Compra feita")
+                        testa_conexao_com_cliente(conexao_socket, mensagem, "Compra registrada com sucesso")
+            
+            # Se cliente enviou flag Passagens_Compradas, servidor retorna passagens encontradas ou nenhuma passagem encontrada
+            elif flag == "Passagens_Compradas":
+                print(f"Recebido a flag: {flag}")
+                print(f"Recebido o cpf: {cpf}")
+
+                # Região crítica - Outra thread não pode mexer no arquivo enquanto tiver carregando informação do arquivo ou
+                # gravando informação nele
+                with lock:
+                    # Pode vir vazio se não encontrou passagens no CPF
+                    compras = verifica_compras_cpf(cpf)
+
+                serializa = json.dumps(compras)
+                mensagem = f"Passagens_encontradas,{serializa}"
+
+                # Verifica se cliente deu close() (encerrou conexão)
+                # Se não encerrou, envia informação indicando exito na compra
+                testa_conexao_com_cliente(conexao_socket, mensagem, "Passagens encontradas enviadas com sucesso")
 
             # Se cliente enviou flag inválida (não corresponde a nenhuma operação), 
             # servidor retorna informação referente
             else:
+                print(f"Recebido a flag: {flag}")
                 print("Operação não identificada.")
                 mensagem = f"Flag_Invalida,"
 
                 # Verifica se cliente deu close() (encerrou conexão)
                 # Se não encerrou, envia informação indicando flag inválida recebida
-                testa_conexao_com_cliente(conexao_socket, mensagem, "Operação não identificada informada ao cliente.")
+                testa_conexao_com_cliente(conexao_socket, mensagem, "Operação não identificada enviada com sucesso")
         
     finally:
         encerrar_conexao(conexao_socket)
