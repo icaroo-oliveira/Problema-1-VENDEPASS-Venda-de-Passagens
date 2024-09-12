@@ -94,12 +94,13 @@ def enviar_e_receber_mensagem(client_socket, mensagem):
 # Função para servidor verificar se ainda tem conexão com o cliente, antes de enviar dados (evita enviar dados atoa)
 # Caso conexão caia por parte do cliente e evita que servidor não envie dado para lugar algum
 def testa_conexao_com_cliente(conexao_socket, mensagem, print_msg):
+    # Impede de recv congelar fluxo para esperar dados
     conexao_socket.setblocking(False)
     try:
-        # Tenta ler do socket para verificar se o cliente fechou a conexão
+        # Tenta ler do socket para verificar se o cliente fechou a conexão (lança exceção se não tem dados disponíveis)
         data = conexao_socket.recv(1024)
         
-        # Se não fechou, envia mensagem
+        # Se não fechou, envia mensagem (recv = b'', indica que não tem conexão)
         if data != b'':
             conexao_socket.setblocking(True)
             data = enviar_mensagem(conexao_socket, mensagem)
