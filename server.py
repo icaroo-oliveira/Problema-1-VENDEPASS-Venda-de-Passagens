@@ -3,10 +3,10 @@ import json
 from connection import config_server, receber_mensagem, encerrar_conexao, testa_conexao_com_cliente, get_ip_address
 from utils_server import cria_arquivo_grafo, carregar_grafo, encontrar_caminhos, verifica_compras_cpf, verifica_caminho_escolhido, registra_caminho_escolhido, cidades
 
-#ip = get_ip_address('enp3s0f0')
-ip = 'localhost'
+#IP = get_ip_address('enp3s0f0')
+IP = 'localhost'
 
-porta = 65433
+PORTA = 65433
 
 # Mutex para impedir que mais de uma thread acesse uma região crítica
 lock = threading.Lock()
@@ -129,7 +129,7 @@ def start_server():
     cria_arquivo_grafo()
 
     # Se não conseguir criar e configurar servidor, encerra programa
-    server_socket = config_server(ip, porta)
+    server_socket = config_server(IP, PORTA)
     if server_socket is None:
         print("Erro ao iniciar o servidor. Encerrando aplicação.")
         return
