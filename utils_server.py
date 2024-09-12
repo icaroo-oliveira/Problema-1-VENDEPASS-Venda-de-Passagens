@@ -5,8 +5,8 @@ import networkx as nx
 cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória", 
             "São Paulo", "Rio de Janeiro", "Curitiba", "Florianópolis", "Porto Alegre"]
 
-arquivo_grafo = 'grafo.json'
-arquivo_passagens_compradas = 'passagens.json'
+ARQUIVO_GRAFO = 'grafo.json'
+ARQUIVO_PASSAGENS_COMṔRADAS = 'passagens.json'
 
 # Função para calcular valor de um caminho (a cada 100km soma 115 reais)
 def soma_valor(km):
@@ -92,7 +92,7 @@ def cria_arquivo_grafo():
 # Função que carrega um grafo do arquivo
 def carregar_grafo():
     # Abre arquivo e retorna os dados do grafo
-    with open(arquivo_grafo, 'r') as arq:
+    with open(ARQUIVO_GRAFO, 'r') as arq:
         dados_existentes = json.load(arq)
     
     # Cria novo grafo para armazenar dados do grafo retornado
@@ -112,7 +112,7 @@ def carregar_grafo():
 # Função que carrega todas as passagens compradas no sistema
 def carregar_passagens_compradas():
     try:
-        with open(arquivo_passagens_compradas, 'r') as arq:
+        with open(ARQUIVO_PASSAGENS_COMṔRADAS, 'r') as arq:
             # Retorna dicionário (cpf são as chaves)
             return json.load(arq)
         
@@ -136,12 +136,12 @@ def salvar_grafo(grafo_att):
         })
 
     # Salva novo grafo em arquivo
-    with open(arquivo_grafo, 'w') as arq:
+    with open(ARQUIVO_GRAFO, 'w') as arq:
         json.dump(dados_novos, arq, indent=4)
 
 # Função que salva um dicionário no arquivo (atualiza)
 def salvar_passagem_comprada(dicionario_att):
-    with open(arquivo_passagens_compradas, 'w') as arq:
+    with open(ARQUIVO_PASSAGENS_COMṔRADAS, 'w') as arq:
         json.dump(dicionario_att, arq, indent=4)
 
 # Função que encontra 10 caminhos entre origem e destino, e retorna ordenado considerando distancia total (menor ao maior)
