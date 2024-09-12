@@ -4,10 +4,10 @@ from utils_client import clear_terminal, imprime_divisoria, sleep_clear, cidades
 from interface import mostrar_menu_principal, selecionar_cidades, selecionar_caminho, verificar_passagens_compradas, exibe_compras_cpf
 from connection import conecta_server, encerrar_conexao, enviar_e_receber_mensagem
 
-#ip = '172.16.103.7'
-ip = 'localhost'
+#IP = '172.16.103.7'
+IP = 'localhost'
 
-porta = 65433
+PORTA = 65433
 
 def start_client():
     while True:
@@ -39,7 +39,7 @@ def start_client():
                     break
                 
                 # Se não conseguir se conectar ao servidor, volta a escolha das cidades
-                client_socket = conecta_server(ip, porta)
+                client_socket = conecta_server(IP, PORTA)
                 if client_socket is None:
                     sleep_clear(3)
                     continue
@@ -99,7 +99,7 @@ def start_client():
                         serializa = json.dumps(caminho)
 
                         # Se não conseguir se conectar ao servidor, volta para escolha do caminho
-                        client_socket = conecta_server(ip, porta)
+                        client_socket = conecta_server(IP, PORTA)
                         if client_socket is None:
                             sleep_clear(3)
                             continue
@@ -180,7 +180,7 @@ def start_client():
                     break
                 
                 # Se não conseguir se conectar ao servidor, volta a escolha do cpf
-                client_socket = conecta_server(ip, porta)
+                client_socket = conecta_server(IP, PORTA)
                 if client_socket is None:
                     sleep_clear(3)
                     continue
