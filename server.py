@@ -1,7 +1,7 @@
 import threading
 import json
-from connection import config_server, receber_mensagem, encerrar_conexao, testa_conexao_com_cliente, get_ip_address
-from utils_server import cria_arquivo_grafo, carregar_grafo, encontrar_caminhos, verifica_compras_cpf, verifica_caminho_escolhido, registra_caminho_escolhido, cidades
+from connection import config_server, receber_mensagem, encerrar_conexao, testa_conexao, get_ip_address
+from utils_server import cria_arquivo_grafo, carregar_grafo, encontrar_caminhos, verifica_compras_cpf, verifica_caminho_escolhido, registra_caminho_escolhido, verifica_teste, cidades
 
 #IP = get_ip_address('enp3s0f0')
 IP = 'localhost'
@@ -44,7 +44,9 @@ def handle_client(conexao_socket, client_address):
 
                     # Verifica se cliente deu close() (encerrou conexão)
                     # Se não encerrou, envia os caminhos encontrados
-                    testa_conexao_com_cliente(conexao_socket, mensagem, "Caminhos enviados com sucesso")
+                    teste = testa_conexao(conexao_socket, mensagem)
+
+                    verifica_teste(teste, "Caminhos enviados com sucesso")
 
             # Se cliente enviou flag Comprar, servidor retorna sucesso de compra ou novos caminhos
             elif flag == "Comprar":
@@ -78,7 +80,9 @@ def handle_client(conexao_socket, client_address):
 
                         # Verifica se cliente deu close() (encerrou conexão)
                         # Se não encerrou, envia os novos caminhos encontrados
-                        testa_conexao_com_cliente(conexao_socket, mensagem, "Novos caminhos enviados com sucesso")
+                        teste = testa_conexao(conexao_socket, mensagem)
+
+                        verifica_teste(teste, "Novos caminhos enviados com sucesso")
                     
                     # Se retornou true, caminho ta disponível
                     else:
@@ -89,7 +93,9 @@ def handle_client(conexao_socket, client_address):
 
                         # Verifica se cliente deu close() (encerrou conexão)
                         # Se não encerrou, envia informação indicando exito na compra
-                        testa_conexao_com_cliente(conexao_socket, mensagem, "Compra registrada com sucesso")
+                        teste = testa_conexao(conexao_socket, mensagem)
+
+                        verifica_teste(teste, "Compra registrada com sucesso")
             
             # Se cliente enviou flag Passagens_Compradas, servidor retorna passagens encontradas ou nenhuma passagem encontrada
             elif flag == "Passagens_Compradas":
@@ -107,7 +113,9 @@ def handle_client(conexao_socket, client_address):
 
                 # Verifica se cliente deu close() (encerrou conexão)
                 # Se não encerrou, envia informação indicando exito na compra
-                testa_conexao_com_cliente(conexao_socket, mensagem, "Passagens encontradas enviadas com sucesso")
+                teste = testa_conexao(conexao_socket, mensagem)
+
+                verifica_teste(teste, "Passagens encontradas enviadas com sucesso")
 
             # Se cliente enviou flag inválida (não corresponde a nenhuma operação), 
             # servidor retorna informação referente
@@ -118,8 +126,10 @@ def handle_client(conexao_socket, client_address):
 
                 # Verifica se cliente deu close() (encerrou conexão)
                 # Se não encerrou, envia informação indicando flag inválida recebida
-                testa_conexao_com_cliente(conexao_socket, mensagem, "Operação não identificada enviada com sucesso")
-        
+                teste = testa_conexao(conexao_socket, mensagem)
+
+                verifica_teste(teste, "Operação não identificada enviada com sucesso")
+
     finally:
         encerrar_conexao(conexao_socket)
         print("\nConexão encerrada. Aguardando nova conexão...\n")

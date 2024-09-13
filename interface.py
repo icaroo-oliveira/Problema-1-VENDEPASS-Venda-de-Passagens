@@ -59,9 +59,9 @@ def selecionar_caminho(cidades, origem, destino, caminhos):
     
     while True:
         cpf = input("Digite seu CPF para registro da compra (apenas os números): ")
-        if cpf.isdigit() and int(cpf) not in (0, 100):
+        if cpf.isdigit() and int(cpf) > 100:
             break
-        print("Entrada inválida. Apenas números diferentes de 0 e 100!")
+        print("Entrada inválida. Apenas números maiores que 100!")
     
     return escolha, cpf
 
@@ -72,7 +72,7 @@ def verificar_passagens_compradas():
 
     while True:
         cpf = input("Digite seu CPF para consultar passagens compradas (apenas os números): ")
-        if cpf.isdigit():
+        if cpf.isdigit() and (int(cpf) == 0 or int(cpf) >= 100):
             break
         print("Entrada inválida.")
     

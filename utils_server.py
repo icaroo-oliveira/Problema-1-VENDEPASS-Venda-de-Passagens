@@ -13,6 +13,11 @@ def soma_valor(km):
     valor = (km / 100) * 115
     return round(valor, 2)
 
+# Função para exibir em tela se teste de conexão com cliente deu bom
+def verifica_teste(teste, print_msg):
+    if teste:
+        print(print_msg)
+
 # Função para quando abrir servidor, carregar ou criar o grafo
 def cria_arquivo_grafo():
     # Carregando o grafo a partir do arquivo JSON

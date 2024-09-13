@@ -66,8 +66,13 @@ def enviar_mensagem(new_socket, mensagem):
 def receber_mensagem(new_socket):
     try:
         data = new_socket.recv(1024)
+
+        if data == b'':
+            print("Conexão foi encerrada antes de receber dados.")
+            return None
+        
         return data
-    
+
     # conexão encerrada, conexão demorou muito, outro erro qualquer
     except (OSError, socket.timeout, Exception) as e:
         print(f"Erro no recebimento de dados: {e}. Retornando ...")
@@ -85,34 +90,44 @@ def encerrar_conexao(new_socket):
 
 # Função para enviar e receber mensagem (sempre que cliente envia mensagem, ele deve esperar resposta do servidor)
 def enviar_e_receber_mensagem(client_socket, mensagem):
-    data = enviar_mensagem(client_socket, mensagem)
+    data = testa_conexao(client_socket, mensagem)
     if data is None:
         return None
-
+    
     return receber_mensagem(client_socket)
 
-# Função para servidor verificar se ainda tem conexão com o cliente, antes de enviar dados (evita enviar dados atoa)
-# Caso conexão caia por parte do cliente e evita que servidor não envie dado para lugar algum
-def testa_conexao_com_cliente(conexao_socket, mensagem, print_msg):
+# Função para verificar se ainda tem conexão ativa cliente/servidor, antes de enviar dados (evita enviar dados atoa)
+# Caso não exista conexão, evita que cliente ou servidor envie dado para lugar algum
+def testa_conexao(conexao_socket, mensagem):
     # Impede de recv congelar fluxo para esperar dados
     conexao_socket.setblocking(False)
     try:
-        # Tenta ler do socket para verificar se o cliente fechou a conexão (lança exceção se não tem dados disponíveis)
+        # Tenta ler do socket para verificar se conexão ainda existe (lança exceção se não tem dados disponíveis)
         data = conexao_socket.recv(1024)
         
-        # Se não fechou, envia mensagem (recv = b'', indica que não tem conexão)
+        # Se não fechou, envia mensagem (recv = b'', indica que não tem conexão = algum dos lados deu close(). )
         if data != b'':
             conexao_socket.setblocking(True)
+
+            # Redefine timeout ( setblocking(false) reseta timeout )
+            conexao_socket.settimeout(10)
             data = enviar_mensagem(conexao_socket, mensagem)
-            if data:
-                print(print_msg)
-        
+            
+            # Pode ser 1 = sucesso, None = deu ruim
+            return data
+
+        # Caso conexão esteja fechada      
         else:
-            print("Conexão com cliente foi encerrada antes de enviar dados.")
+            print("Conexão foi encerrada antes de enviar dados.")
+            return None
    
-    # Caso conexão esteja open, mas cliente não tem dado a enviar ( ta esperando o servidor retornar )
+    # Caso conexão esteja open, mas lado oposto não tem dado a enviar ( ta esperando retorno )
     except BlockingIOError:
         conexao_socket.setblocking(True)  # Volta ao modo bloqueante para enviar
+
+        # Redefine timeout ( setblocking(false) reseta timeout )
+        conexao_socket.settimeout(10)
         data = enviar_mensagem(conexao_socket, mensagem)
-        if data:
-            print(print_msg)
+        
+        # Pode ser 1 = sucesso, None = deu ruim
+        return data
