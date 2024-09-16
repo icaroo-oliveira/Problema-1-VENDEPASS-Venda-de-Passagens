@@ -1,0 +1,19 @@
+{
+    "123123213213": [
+        {
+            "caminho": [
+                "Cuiab\u00e1",
+                "Campo Grande",
+                "Belo Horizonte",
+                "Goi\u00e2nia"
+            ],
+            "assentos": [
+                1,
+                1,
+                1
+            ],
+            "distancia": 2840,
+            "valor": 3266.0
+        }
+    ]
+}

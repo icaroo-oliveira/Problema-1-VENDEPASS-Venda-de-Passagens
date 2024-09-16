@@ -86,11 +86,11 @@ def exibe_compras_cpf(cpf, passagens):
     # Exibe todas as compras associadas a um CPF
     for i, compra in enumerate(passagens, 1):
         # Exibe caminho (todos os trechos), distancia total e valor
-        print(f"Compra {i}: {' -> '.join(compra["caminho"])} | {compra["distancia"]}km | R$ {compra["valor"]}")
+        print(f"Compra {i}: {' -> '.join(compra['caminho'])} | {compra['distancia']}km | R$ {compra['valor']}")
 
         # Exibe número do assento de cada trecho do caminho
         for i in range(len(compra["assentos"])):
-            print(f"{i+1}.Trecho {compra["caminho"][i]} -> {compra["caminho"][i+1]}: Assento -> {compra["assentos"][i]}")
+            print(f"{i+1}.Trecho {compra['caminho'][i]} -> {compra['caminho'][i+1]}: Assento -> {compra['assentos'][i]}")
         
         print("")
 

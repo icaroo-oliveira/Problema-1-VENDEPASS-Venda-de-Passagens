@@ -24,8 +24,9 @@ def get_ip_address(interface_name):
 
 # Função pra configurar o socket do servidor
 def config_server(ip, porta):
+    ip1='0.0.0.0'
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_address = (ip, porta)
+    server_address = (ip1, porta)
 
     try:
         server_socket.bind(server_address)
@@ -39,7 +40,8 @@ def config_server(ip, porta):
 # Função para cliente conectar ao servidor ( cria socket do cliente )
 def conecta_server(ip, porta):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_address = (ip, porta)
+    ip1 ='server'
+    server_address = (ip1, porta)
     
     try:
         client_socket.settimeout(10)  # Define um timeout de 10 segundos
