@@ -26,6 +26,9 @@ def get_ip_address(interface_name):
 def config_server(ip, porta):
     ip1='0.0.0.0'
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Define SO_REUSEADDR para permitir a reutilização da porta
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_address = (ip1, porta)
 
     try:
