@@ -1,12 +1,13 @@
-# Dockerfile.client
+#dockerfile.client
 
+#imagem python usada
 FROM python:3.12-slim
 
-# Define o diretório de trabalho
+#defindo o diretório de trabalho
 WORKDIR /app
 
-# Copia todos os arquivos para o diretório de trabalho
+#copiando todos os arquivos para o diretório de trabalho
 COPY . /app
 
-# Comando para iniciar o cliente
+#comando para iniciar o cliente
 CMD ["python3", "client.py"]
