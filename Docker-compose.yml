@@ -23,9 +23,9 @@ services:
       - server
     image: problema-1-vendepass-venda-de-passagens-client #nome da imagem
     container_name: client-container1 #nome do container criado com base na imagem
-    stdin_open: true    # Mantém o terminal aberto para interação
-    tty: true           # Aloca um terminal para o container
-    command: python3 client.py # Executa o script do cliente
+    stdin_open: true    # mantém o terminal aberto para interação
+    tty: true           # aloca um terminal para o container
+    command: python3 client.py # executa o script do cliente
     networks:
       - vendepass-network
 
