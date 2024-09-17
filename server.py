@@ -155,7 +155,7 @@ def start_server():
             # Retorna socket da conexão com cliente e informações sobre o cliente (IP e porta)
             conexao_socket, client_address = server_socket.accept()
 
-            # Define um timeout de 10 segundos
+            # Define um timeout de 10 segundos e cria uma thread para lidar com a nova conexão
             conexao_socket.settimeout(10)
             client_thread = threading.Thread(target=handle_client, args=(conexao_socket, client_address))
             client_thread.start()

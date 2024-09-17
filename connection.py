@@ -24,12 +24,11 @@ def get_ip_address(interface_name):
 
 # Função pra configurar o socket do servidor
 def config_server(ip, porta):
-    ip1='0.0.0.0'
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # Define SO_REUSEADDR para permitir a reutilização da porta
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server_address = (ip1, porta)
+    server_address = (ip, porta)
 
     try:
         server_socket.bind(server_address)
@@ -43,8 +42,7 @@ def config_server(ip, porta):
 # Função para cliente conectar ao servidor ( cria socket do cliente )
 def conecta_server(ip, porta):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    ip1 ='server'
-    server_address = (ip1, porta)
+    server_address = (ip, porta)
     
     try:
         client_socket.settimeout(10)  # Define um timeout de 10 segundos
@@ -110,7 +108,7 @@ def testa_conexao(conexao_socket, mensagem):
         # Tenta ler do socket para verificar se conexão ainda existe (lança exceção se não tem dados disponíveis)
         data = conexao_socket.recv(1024)
         
-        # Se não fechou, envia mensagem (recv = b'', indica que não tem conexão = algum dos lados deu close(). )
+        # Se não fechou conexão, envia mensagem (recv = b'', indica que não tem conexão = algum dos lados deu close() )
         if data != b'':
             conexao_socket.setblocking(True)
 

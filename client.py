@@ -21,8 +21,8 @@ def start_client():
         
         # Se escolheu comprar uma passagem
         if escolha == '1':
-            # Caso cliente não consiga enviar ou receber dados do servidor, ele escolher origem e destino de novo e tenta
-            # enviar ou receber os dados novamente
+            # Caso cliente não consiga se conectar, enviar ou receber dados ao servidor, 
+            # ele escolhe origem e destino de novo e tenta enviar ou receber os dados novamente
             while True:
                 origem, destino = selecionar_cidades(cidades)
                 
@@ -78,8 +78,8 @@ def start_client():
 
             while True:
                 if caminhos:
-                    # Caso cliente não consiga enviar ou receber dados do servidor, ele escolhe caminho e cpf de novo e tenta
-                    # enviar ou receber os dados novamente
+                    # Caso cliente não consiga se conectar, enviar ou receber dados do servidor, 
+                    # ele escolhe caminho e cpf de novo e tenta enviar ou receber os dados novamente
                     while True:
                         escolha, cpf = selecionar_caminho(cidades, origem, destino, caminhos)
 
@@ -164,6 +164,8 @@ def start_client():
         
         # Se escolheu verificar passagens compradas
         elif escolha == '2':
+            # Caso cliente não consiga se conectar, enviar ou receber dados do servidor, 
+            # ele escolhe cpf de novo e tenta enviar ou receber os dados novamente
             while True:
                 cpf = verificar_passagens_compradas()
                 
@@ -217,7 +219,8 @@ def start_client():
             
             passagens = json.loads(dado)
             
-            # Se servidor encontrou passagens compradas no CPF
+            # Se servidor encontrou passagens compradas no CPF, 
+            # exibe e aguarda escolha do usuário entre voltar ao menu principal ou sair do programa
             if passagens:
                 escolha = exibe_compras_cpf(cpf, passagens)
                 
@@ -226,7 +229,7 @@ def start_client():
 
                 clear_terminal()
 
-            # Se servidor não encontrou passagens compradas no CPF, volta ao menu
+            # Se servidor não encontrou passagens compradas no CPF, volta ao menu principal automaticamente
             else:
                 imprime_divisoria()
                 print(f"Não existem passagens compradas para CPF: {cpf}")
