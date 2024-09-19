@@ -142,7 +142,7 @@ def start_client():
                     
                     # Servidor enviou flag indicando que o caminho escolhido não estava mais disponível
                     # Servidor retornou novos caminhos ou caminho vazio (não tem mais nenhum caminho de origem a destino)
-                    elif flag == "Novos_Caminhos":
+                    elif flag == "Novos_Caminhos_Encontrados":
                         caminhos = json.loads(dado)
                         imprime_divisoria()
                         print("Caminho escolhido não mais disponível!")

@@ -40,7 +40,7 @@ def handle_client(conexao_socket, client_address):
                     caminhos = encontrar_caminhos(G, origem, destino)
                     serializa = json.dumps(caminhos)
 
-                    mensagem = f"0,{serializa}"
+                    mensagem = f"Caminhos_Encontrados,{serializa}"
 
                     # Verifica se cliente deu close() (encerrou conexão)
                     # Se não encerrou, envia os caminhos encontrados
@@ -76,7 +76,7 @@ def handle_client(conexao_socket, client_address):
                     if comprar == False:
                         caminhos = encontrar_caminhos(G, origem, destino)
                         serializa = json.dumps(caminhos)
-                        mensagem = f"Novos_Caminhos,{serializa}"
+                        mensagem = f"Novos_Caminhos_Encontrados,{serializa}"
 
                         # Verifica se cliente deu close() (encerrou conexão)
                         # Se não encerrou, envia os novos caminhos encontrados
@@ -109,7 +109,7 @@ def handle_client(conexao_socket, client_address):
                     compras = verifica_compras_cpf(cpf)
 
                 serializa = json.dumps(compras)
-                mensagem = f"Passagens_encontradas,{serializa}"
+                mensagem = f"Passagens_Encontradas,{serializa}"
 
                 # Verifica se cliente deu close() (encerrou conexão)
                 # Se não encerrou, envia informação indicando exito na compra
