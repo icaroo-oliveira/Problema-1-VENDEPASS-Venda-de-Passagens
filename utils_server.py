@@ -6,7 +6,7 @@ cidades = ["Cuiabá", "Goiânia", "Campo Grande", "Belo Horizonte", "Vitória",
             "São Paulo", "Rio de Janeiro", "Curitiba", "Florianópolis", "Porto Alegre"]
 
 ARQUIVO_GRAFO = 'grafo.json'
-ARQUIVO_PASSAGENS_COMṔRADAS = 'passagens.json'
+ARQUIVO_PASSAGENS_COMPRADAS = 'passagens.json'
 
 # Função para calcular valor de um caminho (a cada 100km soma 115 reais)
 def soma_valor(km):
@@ -83,15 +83,16 @@ def cria_arquivo_grafo():
 
         # Estrutura é parecida com isso
         # { 
-        #   ("São Paulo", "Rio de Janeiro") : {'distancia': 980, 'assentos': 3, 'cpf': []}
-        #   ("Vitória", "Curitiba") : {'distancia': 34, 'assentos': 3, 'cpf': []}
+        #   ("São Paulo", "Rio de Janeiro") : {'distancia': 980, 'assentos': 3, 'cpf': []},
+        #   ("Vitória", "Curitiba") : {'distancia': 34, 'assentos': 3, 'cpf': []},
         #   ...
         # }
 
         # É um dicionário geral que armazena todas as conexões (grafo)
         # As chaves desse dicionário são tuplas que armazenam a v1 e v2 (cidades com conexão)
         # Os valores dessas chaves são dicionários, onde as chaves serão as distancias, assentos e cpf. Os valores
-        # dessas chaves são as informações desses dados
+        # dessas chaves são as informações desses dados, onde cpf é uma lista que guarda cpf's que compraram
+        # um assento (ou seja, lista[0] = cpf que comprou assento 1)
         salvar_grafo(G)
 
 # Função que carrega um grafo do arquivo
@@ -117,7 +118,7 @@ def carregar_grafo():
 # Função que carrega todas as passagens compradas no sistema
 def carregar_passagens_compradas():
     try:
-        with open(ARQUIVO_PASSAGENS_COMṔRADAS, 'r') as arq:
+        with open(ARQUIVO_PASSAGENS_COMPRADAS, 'r') as arq:
             # Retorna dicionário (cpf são as chaves)
             return json.load(arq)
         
@@ -127,7 +128,7 @@ def carregar_passagens_compradas():
 
 # Função que salva um grafo no arquivo (atualiza)
 def salvar_grafo(grafo_att):
-    # Novo _att a ser salvo em arquivo
+    # Novo grafo a ser salvo em arquivo
     dados_novos = {'trecho': []}
 
     # Salva novos dados de cada trecho (atualiza na lista de cada trecho. LISTA = informações como distancia e etc)
@@ -146,10 +147,16 @@ def salvar_grafo(grafo_att):
 
 # Função que salva um dicionário no arquivo (atualiza)
 def salvar_passagem_comprada(dicionario_att):
-    with open(ARQUIVO_PASSAGENS_COMṔRADAS, 'w') as arq:
+    with open(ARQUIVO_PASSAGENS_COMPRADAS, 'w') as arq:
         json.dump(dicionario_att, arq, indent=4)
 
 # Função que encontra 10 caminhos entre origem e destino, e retorna ordenado considerando distancia total (menor ao maior)
+# Retorna uma lista de tuplas,  1° item da tupla = distancia total dos trechos; 2° item da tupla = lista com os trechos (origem a destino)
+# ex:  [
+#           (223, ["curitiba", "cuiabá", "sao paulo"]),
+#           (567, ["curitiba", "bh", "rj", "sao paulo"]),
+#           ... mais 8 pra fechar 10 (ou nao, se tiver menos que 10)  
+#      ]
 def encontrar_caminhos(grafo, cidade_inicial, cidade_fim):
     caminhos = []
     
@@ -192,6 +199,13 @@ def verifica_compras_cpf(cpf):
 # Função para registrar nova compra de passagem em um CPF
 # ps: É um dicionário geral onde a chave vai ser o CPF e o valor de cada CPF vai ser uma lista
 # A cada nova compra em um CPF, é adicionado um dicionário nessa lista, logo é uma lista de dicionários
+# ex: {
+#      "2347567" : [ 
+#                    {'caminho': ["floripa","sla","curitiba"], 'assentos': [1, 3], 'distancia': 234, 'valor': 1000},
+#                    {'caminho': ["sp","bh","berlim"], 'assentos': [3, 2], 'distancia': 1345, 'valor': 23954},      
+#                  ],
+#      "6754234" : lista com compras desse cpf .....          
+#     }
 def registra_compra(cpf, caminho, distancia, assentos):
     # Carrega todas as compras do sistema
     compras =  carregar_passagens_compradas()
@@ -236,6 +250,7 @@ def registra_caminho_escolhido(G, caminho, cpf):
     # Passa por cada trecho do caminho, desconta um assento e registra CPF de quem comprou o assento
     for i in range(len(caminho[1]) - 1):
         trecho = (caminho[1][i], caminho[1][i + 1])
+        
         G[trecho[0]][trecho[1]]['assentos'] -= 1
         G[trecho[0]][trecho[1]]['cpf'].append(cpf)
 

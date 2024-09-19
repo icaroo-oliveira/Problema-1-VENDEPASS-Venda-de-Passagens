@@ -77,6 +77,9 @@ def start_client():
             caminhos = json.loads(dado)
 
             while True:
+                # Verifica se servidor achou algum caminho de origem à destino, se achou
+                # exibe caminhos e aguarda escolha do usuário entre voltar ao menu principal, sair do programa
+                # ou tentar comprar um caminho
                 if caminhos:
                     # Caso cliente não consiga se conectar, enviar ou receber dados do servidor, 
                     # ele escolhe caminho e cpf de novo e tenta enviar ou receber os dados novamente
@@ -158,7 +161,7 @@ def start_client():
                     sleep_clear(5)
                     break
             
-            #Encerra aplicação
+            # Encerra aplicação
             if sair:
                 break
         

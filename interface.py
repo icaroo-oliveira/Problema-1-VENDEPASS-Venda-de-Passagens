@@ -61,7 +61,7 @@ def selecionar_caminho(cidades, origem, destino, caminhos):
         cpf = input("Digite seu CPF para registro da compra (apenas os números): ")
         if cpf.isdigit() and int(cpf) > 100:
             break
-        print("Entrada inválida. Apenas números maiores que 100!")
+        print("Entrada inválida. Apenas número maior que 100!")
     
     return escolha, cpf
 
