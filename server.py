@@ -135,14 +135,14 @@ def handle_client(conexao_socket, client_address):
         print("\nConexão encerrada. Aguardando nova conexão...\n")
 
 def start_server():
-    # Se não existir o arquivo, cria um novo
-    cria_arquivo_grafo()
-
     # Se não conseguir criar e configurar servidor, encerra programa
     server_socket = config_server(IP, PORTA)
     if server_socket is None:
         print("Erro ao iniciar o servidor. Encerrando aplicação.")
         return
+    
+    # Se não existir o arquivo, cria um novo
+    cria_arquivo_grafo()
     
     # Retorna IP e Porta associada ao socket do servidor
     print(f"\nServidor -> IP: {server_socket.getsockname()[0]}  |  Porta: {server_socket.getsockname()[1]}\n")

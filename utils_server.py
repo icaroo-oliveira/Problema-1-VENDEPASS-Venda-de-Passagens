@@ -151,7 +151,7 @@ def salvar_passagem_comprada(dicionario_att):
         json.dump(dicionario_att, arq, indent=4)
 
 # Função que encontra 10 caminhos entre origem e destino, e retorna ordenado considerando distancia total (menor ao maior)
-# Retorna uma lista de tuplas,  1° item da tupla = distancia total dos trechos; 2° item da tupla = lista com os trechos (origem a destino)
+# Retorna uma lista de tuplas,  1° item da tupla = distancia total dos trechos; 2° item da tupla = lista com os trechos (origem à destino)
 # ex:  [
 #           (223, ["curitiba", "cuiabá", "sao paulo"]),
 #           (567, ["curitiba", "bh", "rj", "sao paulo"]),

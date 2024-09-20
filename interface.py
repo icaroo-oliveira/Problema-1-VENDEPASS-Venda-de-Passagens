@@ -10,7 +10,7 @@ def mostrar_menu_principal():
         escolha = input("1- Comprar\n2- Minhas compras\n0- Encerrar programa\n\n>>> ")
         if escolha in ['0', '1', '2']:
             break
-        print("Entrada inválida.")
+        print("\nEntrada inválida.\n")
     
     return escolha
 
@@ -58,10 +58,10 @@ def selecionar_caminho(cidades, origem, destino, caminhos):
         return escolha, None
     
     while True:
-        cpf = input("Digite seu CPF para registro da compra (apenas os números): ")
-        if cpf.isdigit() and int(cpf) > 100:
+        cpf = input("Digite seu CPF para registro da compra (apenas número maior que 100): ")
+        if cpf.isdigit() and (int(cpf) == 0 or int(cpf) >= 100):
             break
-        print("Entrada inválida. Apenas número maior que 100!")
+        print("Entrada inválida.")
     
     return escolha, cpf
 
@@ -71,7 +71,7 @@ def verificar_passagens_compradas():
     print("0- Encerrar programa\n100- Menu\n")
 
     while True:
-        cpf = input("Digite seu CPF para consultar passagens compradas (apenas os números): ")
+        cpf = input("Digite seu CPF para consultar passagens compradas (apenas número maior que 100): ")
         if cpf.isdigit() and (int(cpf) == 0 or int(cpf) >= 100):
             break
         print("Entrada inválida.")

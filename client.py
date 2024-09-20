@@ -11,6 +11,7 @@ PORTA = 65433
 
 def start_client():
     while True:
+        # Escolhe entre comprar uma passagem, ver passagens compradas em um CPF ou sair do programa
         escolha = mostrar_menu_principal()
 
         if escolha == '0':
@@ -87,25 +88,26 @@ def start_client():
                         escolha, cpf = selecionar_caminho(cidades, origem, destino, caminhos)
 
                         # Encerra aplicação
-                        if escolha == "0":
+                        if escolha == "0" or cpf == "0":
                             sair = 1
                             break
                         
                         # Volta ao menu principal
-                        if escolha == "100":
+                        if escolha == "100" or cpf == "100":
                             menu = 1
 
                             clear_terminal()
                             break
-                        
-                        caminho = caminhos[int(escolha)-1]
-                        serializa = json.dumps(caminho)
 
                         # Se não conseguir se conectar ao servidor, volta para escolha do caminho
                         client_socket = conecta_server(IP, PORTA)
                         if client_socket is None:
                             sleep_clear(3)
                             continue
+                        
+                        caminho = caminhos[int(escolha)-1]
+
+                        serializa = json.dumps(caminho)
 
                         mensagem = f"Comprar,,,{cpf},{serializa}"
 
@@ -165,7 +167,7 @@ def start_client():
             if sair:
                 break
         
-        # Se escolheu verificar passagens compradas
+        # Se escolheu verificar passagens compradas em um CPF
         elif escolha == '2':
             # Caso cliente não consiga se conectar, enviar ou receber dados do servidor, 
             # ele escolhe cpf de novo e tenta enviar ou receber os dados novamente
