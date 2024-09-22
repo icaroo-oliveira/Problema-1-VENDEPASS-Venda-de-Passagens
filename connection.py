@@ -102,20 +102,20 @@ def enviar_e_receber_mensagem(client_socket, mensagem):
 
 # Função para verificar se ainda tem conexão ativa cliente/servidor, antes de enviar dados (evita enviar dados atoa)
 # Caso não exista conexão, evita que cliente ou servidor envie dado para lugar algum
-def testa_conexao(conexao_socket, mensagem):
+def testa_conexao(new_socket, mensagem):
     # Impede de recv congelar fluxo para esperar dados
-    conexao_socket.setblocking(False)
+    new_socket.setblocking(False)
     try:
         # Tenta ler do socket para verificar se conexão ainda existe (lança exceção se não tem dados disponíveis)
-        data = conexao_socket.recv(1024)
+        data = new_socket.recv(1024)
         
         # Se não fechou conexão, envia mensagem (recv = b'', indica que não tem conexão = algum dos lados encerrou conexão )
         if data != b'':
-            conexao_socket.setblocking(True)
+            new_socket.setblocking(True)
 
             # Redefine timeout ( setblocking(false) reseta timeout )
-            conexao_socket.settimeout(10)
-            data = enviar_mensagem(conexao_socket, mensagem)
+            new_socket.settimeout(10)
+            data = enviar_mensagem(new_socket, mensagem)
             
             # Pode ser 1 = sucesso, None = deu ruim
             return data
@@ -127,11 +127,11 @@ def testa_conexao(conexao_socket, mensagem):
    
     # Caso conexão esteja open, mas lado oposto não tem dado a enviar ( ta esperando retorno )
     except BlockingIOError:
-        conexao_socket.setblocking(True)  # Volta ao modo bloqueante para enviar
+        new_socket.setblocking(True)  # Volta ao modo bloqueante para enviar
 
         # Redefine timeout ( setblocking(false) reseta timeout )
-        conexao_socket.settimeout(10)
-        data = enviar_mensagem(conexao_socket, mensagem)
+        new_socket.settimeout(10)
+        data = enviar_mensagem(new_socket, mensagem)
         
         # Pode ser 1 = sucesso, None = deu ruim
         return data
