@@ -184,7 +184,7 @@ def encontrar_caminhos(grafo, cidade_inicial, cidade_fim):
     return caminhos_ordenados
 
 # Função para verificar se existe compras em um CPF
-# Se existir, retorna uma lista de compras do CPF
+# Se existir, retorna uma lista de dicionários, onde cada dicionário representa uma compra
 # ex: [ 
 #       {'caminho': ["floripa","sla","curitiba"], 'assentos': [1, 3], 'distancia': 234, 'valor': 1000},
 #       {'caminho': ["sp","bh","berlim"], 'assentos': [3, 2], 'distancia': 1345, 'valor': 23954},      

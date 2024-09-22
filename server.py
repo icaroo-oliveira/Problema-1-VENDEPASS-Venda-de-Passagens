@@ -54,6 +54,7 @@ def handle_client(conexao_socket, client_address):
                 print(f"Recebido o caminho: {caminho}")
                 print(f"Recebido o cpf: {cpf}")
 
+                # Uma tupla da lista de tuplas ( distancia, lista com cidades que compoem o caminho )
                 caminho = json.loads(caminho)
                 
                 # Primeiro item da lista = origem

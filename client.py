@@ -105,6 +105,7 @@ def start_client():
                             sleep_clear(3)
                             continue
                         
+                        # Uma tupla da lista de tuplas ( distancia, lista com cidades que compoem o caminho )
                         caminho = caminhos[int(escolha)-1]
 
                         serializa = json.dumps(caminho)
