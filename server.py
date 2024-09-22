@@ -38,6 +38,8 @@ def handle_client(conexao_socket, client_address):
                 with lock:
                     G = carregar_grafo()
                     caminhos = encontrar_caminhos(G, origem, destino)
+
+                    # Lista de tuplas. Cada tupla = Um caminho
                     serializa = json.dumps(caminhos)
 
                     mensagem = f"Caminhos_Encontrados,{serializa}"
@@ -54,7 +56,7 @@ def handle_client(conexao_socket, client_address):
                 print(f"Recebido o caminho: {caminho}")
                 print(f"Recebido o cpf: {cpf}")
 
-                # Uma tupla da lista de tuplas ( distancia, lista com cidades que compoem o caminho )
+                # Uma tupla da lista de tuplas = Um caminho
                 caminho = json.loads(caminho)
                 
                 # Primeiro item da lista = origem
@@ -76,7 +78,10 @@ def handle_client(conexao_socket, client_address):
                     # encontra e retorna novos caminhos para cliente (grafo atualizado)
                     if comprar == False:
                         caminhos = encontrar_caminhos(G, origem, destino)
+
+                        # Lista de tuplas atualizada. Cada tupla = Um caminho
                         serializa = json.dumps(caminhos)
+
                         mensagem = f"Novos_Caminhos_Encontrados,{serializa}"
 
                         # Verifica se cliente deu close() (encerrou conexão)
@@ -109,7 +114,9 @@ def handle_client(conexao_socket, client_address):
                     # Pode vir vazio se não encontrou passagens no CPF
                     compras = verifica_compras_cpf(cpf)
 
+                # Lista de dicionários. Cada dicionário = Uma compra de determinado CPF
                 serializa = json.dumps(compras)
+
                 mensagem = f"Passagens_Encontradas,{serializa}"
 
                 # Verifica se cliente deu close() (encerrou conexão)
@@ -123,6 +130,7 @@ def handle_client(conexao_socket, client_address):
             else:
                 print(f"Recebido a flag: {flag}")
                 print("Operação não identificada.")
+
                 mensagem = f"Flag_Invalida,"
 
                 # Verifica se cliente deu close() (encerrou conexão)

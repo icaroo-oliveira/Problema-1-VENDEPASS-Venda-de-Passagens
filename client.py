@@ -74,7 +74,8 @@ def start_client():
 
                 time.sleep(4)
                 break
-
+            
+            # Lista de tuplas. Cada tupla = Um caminho
             caminhos = json.loads(dado)
 
             while True:
@@ -105,9 +106,9 @@ def start_client():
                             sleep_clear(3)
                             continue
                         
-                        # Uma tupla da lista de tuplas ( distancia, lista com cidades que compoem o caminho )
                         caminho = caminhos[int(escolha)-1]
 
+                        # Uma tupla da lista de tuplas = Um caminho
                         serializa = json.dumps(caminho)
 
                         mensagem = f"Comprar,,,{cpf},{serializa}"
@@ -149,7 +150,9 @@ def start_client():
                     # Servidor enviou flag indicando que o caminho escolhido não estava mais disponível
                     # Servidor retornou novos caminhos ou caminho vazio (não tem mais nenhum caminho de origem a destino)
                     elif flag == "Novos_Caminhos_Encontrados":
+                        # Lista de tuplas atualizada. Cada tupla = Um caminho
                         caminhos = json.loads(dado)
+
                         imprime_divisoria()
                         print("Caminho escolhido não mais disponível!")
 
@@ -223,6 +226,7 @@ def start_client():
                 time.sleep(4)
                 break
             
+            # Lista de dicionários. Cada dicionário = Uma compra de determinado CPF
             passagens = json.loads(dado)
             
             # Se servidor encontrou passagens compradas no CPF, 
