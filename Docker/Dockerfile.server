@@ -5,15 +5,20 @@ FROM python:3.12-slim
 WORKDIR /app
 
 #copiando o arquivo requirements.txt para o container
-COPY requirements.txt .
+COPY Docker/requirements.txt .
 
 #instalando as dependências(requirements.txt)
 RUN pip install --no-cache-dir -r requirements.txt
 
 #copiando o código da aplicação para o container
-COPY . /app
+#COPY . /app
+
+COPY ../server.py /app
+COPY ../connection.py /app
+COPY ../utils_server.py /app
+
 
 EXPOSE 65433
 
 #definindo o comando que será executado quando o container iniciar
-CMD ["python3", "server.py"]
+#CMD ["python3", "server.py"]

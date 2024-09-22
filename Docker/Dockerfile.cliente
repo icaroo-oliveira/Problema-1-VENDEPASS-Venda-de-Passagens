@@ -7,7 +7,13 @@ FROM python:3.12-slim
 WORKDIR /app
 
 #copiando todos os arquivos para o diretório de trabalho
-COPY . /app
+#COPY . /app
+
+
+COPY ../client.py /app
+COPY ../connection.py /app
+COPY ../utils_client.py /app
+COPY ../interface.py /app
 
 #comando para iniciar o cliente
-CMD ["python3", "client.py"]
+#CMD ["python3", "client.py"]

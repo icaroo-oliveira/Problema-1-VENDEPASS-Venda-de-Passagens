@@ -3,29 +3,29 @@ version: '3'
 services:
   server:
     build: #construir uma imagem a parti do dockerfile
-      context: .
-      dockerfile: Dockerfile.server #docker file usada para imagem
+      context: ..
+      dockerfile: Docker/Dockerfile.server #docker file usada para imagem
     image: problema-1-vendepass-venda-de-passagens-server  #nome da imagem
     container_name: server-container1 #nome do container criado com base na imagem
     ports:
       - "65433:65433"  #porta do servidor
     stdin_open: true    #terminal aberto para interação
     tty: true           #um terminal para o container
-    command: python3 server.py #executa o script do servidor
+    #command: python3 server.py #executa o script do servidor
     networks:
       - vendepass-network
 
   client:
     build: #construir uma imagem a parti do dockerfile
-      context: .
-      dockerfile: Dockerfile.cliente #docker file usada para imagem 
+      context: ..
+      dockerfile: Docker/Dockerfile.cliente #docker file usada para imagem 
     depends_on:
       - server
     image: problema-1-vendepass-venda-de-passagens-client #nome da imagem
     container_name: client-container1 #nome do container criado com base na imagem
     stdin_open: true    # mantém o terminal aberto para interação
     tty: true           # aloca um terminal para o container
-    command: python3 client.py # executa o script do cliente
+    #command: python3 client.py # executa o script do cliente
     networks:
       - vendepass-network
 
