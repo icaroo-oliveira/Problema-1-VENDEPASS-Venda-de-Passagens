@@ -184,6 +184,11 @@ def encontrar_caminhos(grafo, cidade_inicial, cidade_fim):
     return caminhos_ordenados
 
 # Função para verificar se existe compras em um CPF
+# Se existir, retorna uma lista de compras do CPF
+# ex: [ 
+#       {'caminho': ["floripa","sla","curitiba"], 'assentos': [1, 3], 'distancia': 234, 'valor': 1000},
+#       {'caminho': ["sp","bh","berlim"], 'assentos': [3, 2], 'distancia': 1345, 'valor': 23954},      
+#     ]
 def verifica_compras_cpf(cpf):
     # Carrega todas as compras do sistema
     compras = carregar_passagens_compradas()
