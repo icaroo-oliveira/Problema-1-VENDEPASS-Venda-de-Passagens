@@ -1,15 +1,22 @@
 import threading
 import json
+import queue
 from connection import config_server, receber_mensagem, encerrar_conexao, testa_conexao, get_ip_address
-from utils_server import cria_arquivo_grafo, carregar_grafo, encontrar_caminhos, verifica_compras_cpf, verifica_caminho_escolhido, registra_caminho_escolhido, verifica_teste, cidades
+from utils_server import *
 
 #IP = get_ip_address('enp3s0f0')
 IP = 'localhost'
 
 PORTA = 65433
 
-# Mutex para impedir que mais de uma thread acesse uma região crítica
+# Condition para controlar acesso a fila de threads (adicionar e retirar threads)
+condition = threading.Condition()
+
+# Lock separado para a região crítica (acesso a arquivos e afins)
 lock = threading.Lock()
+
+# Fila para garantir a ordem de acesso das threads a região crítica (FIFO)
+waiting_queue = queue.Queue()
 
 # Thread que opera cliente individualmente
 def handle_client(conexao_socket, client_address):
@@ -23,6 +30,9 @@ def handle_client(conexao_socket, client_address):
         # Se não receber nenhum dado, vai pro finally e encerra conexão
         if data:
             flag, origem, destino, cpf, caminho = data.decode('utf-8').split(',', 4)
+
+            # Thread atual
+            current_thread = threading.current_thread()
             
             # Se cliente enviou flag Caminhos, servidor retorna caminhos de origem a destino
             if flag == "Caminhos":
@@ -32,10 +42,15 @@ def handle_client(conexao_socket, client_address):
                 print(f"Recebido a flag: {flag}")
                 print(f"Recebido a origem: {origem}")
                 print(f"Recebido o destino: {destino}")
+
+                # Adiciona thread a fila e verifica se ela é a primeira da fila
+                adicionar_thread_fila(condition, current_thread, waiting_queue)
                 
                 # Região crítica - Outra thread não pode mexer no arquivo enquanto tiver carregando informação do arquivo e
                 # enviando ao cliente
                 with lock:
+                    print(f"Thread {current_thread.name} acessando a região crítica.")
+
                     G = carregar_grafo()
                     caminhos = encontrar_caminhos(G, origem, destino)
 
@@ -49,6 +64,9 @@ def handle_client(conexao_socket, client_address):
                     teste = testa_conexao(conexao_socket, mensagem)
 
                     verifica_teste(teste, "Caminhos enviados com sucesso")
+                    
+                    # Remove thread atual da fila e notifica as outras threads
+                    remover_thread_fila(condition, current_thread, waiting_queue)
 
             # Se cliente enviou flag Comprar, servidor retorna sucesso de compra ou novos caminhos
             elif flag == "Comprar":
@@ -64,10 +82,15 @@ def handle_client(conexao_socket, client_address):
 
                 # Ultimo item da lista = destino
                 destino = caminho[1][len(caminho[1]) - 1]
+
+                # Adiciona thread a fila e verifica se ela é a primeira da fila
+                adicionar_thread_fila(condition, current_thread, waiting_queue)
                 
                 # Região crítica - Outra thread não pode mexer no arquivo enquanto tiver carregando informação do arquivo ou
                 # gravando informação nele, e enviando ao cliente
                 with lock:
+                    print(f"Thread {current_thread.name} acessando a região crítica.")
+
                     # Pega informação atual do grafo
                     G = carregar_grafo()
 
@@ -102,17 +125,28 @@ def handle_client(conexao_socket, client_address):
                         teste = testa_conexao(conexao_socket, mensagem)
 
                         verifica_teste(teste, "Compra registrada com sucesso")
+                    
+                    # Remove thread atual da fila e notifica as outras threads
+                    remover_thread_fila(condition, current_thread, waiting_queue)
             
             # Se cliente enviou flag Passagens_Compradas, servidor retorna passagens encontradas ou nenhuma passagem encontrada
             elif flag == "Passagens_Compradas":
                 print(f"Recebido a flag: {flag}")
                 print(f"Recebido o cpf: {cpf}")
 
+                # Adiciona thread a fila e verifica se ela é a primeira da fila
+                adicionar_thread_fila(condition, current_thread, waiting_queue)
+
                 # Região crítica - Outra thread não pode mexer no arquivo enquanto tiver carregando informação do arquivo ou
                 # gravando informação nele
                 with lock:
+                    print(f"Thread {current_thread.name} acessando a região crítica.")
+
                     # Pode vir vazio se não encontrou passagens no CPF
                     compras = verifica_compras_cpf(cpf)
+
+                    # Remove thread atual da fila e notifica as outras threads
+                    remover_thread_fila(condition, current_thread, waiting_queue)
 
                 # Lista de dicionários. Cada dicionário = Uma compra de determinado CPF
                 serializa = json.dumps(compras)

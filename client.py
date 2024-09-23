@@ -1,6 +1,6 @@
 import json
 import time
-from utils_client import clear_terminal, imprime_divisoria, sleep_clear, cidades
+from utils_client import *
 from interface import mostrar_menu_principal, selecionar_cidades, selecionar_caminho, verificar_passagens_compradas, exibe_compras_cpf
 from connection import conecta_server, encerrar_conexao, enviar_e_receber_mensagem
 

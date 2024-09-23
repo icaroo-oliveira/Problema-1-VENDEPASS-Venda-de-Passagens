@@ -20,7 +20,7 @@ def abrir_terminal(escolhas):
     subprocess.Popen(comando, shell=True)
 
 # Número de clientes/terminais
-num_clients = 2
+num_clients = 3
 
 # Abrindo múltiplos terminais com os mesmos parâmetros
 for i in range(num_clients):
@@ -31,7 +31,5 @@ for i in range(num_clients):
     #client_thread.start()
     abrir_terminal(escolhas)
     cont+=1
-    cont2+=1
-    cont3+=1
     
    

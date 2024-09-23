@@ -268,3 +268,25 @@ def registra_caminho_escolhido(G, caminho, cpf):
     # Atualiza dicionário com nova passagem comprada e salva em arquivo
     # ps: caminho[1] = lista com cidades (trechos), caminho[0] = distancia total do caminho (soma dos trechos)
     registra_compra(cpf, caminho[1], caminho[0], assentos)
+
+# Função para adicionar uma thread na fila de acesso a região crítica
+def adicionar_thread_fila(condition, current_thread, waiting_queue):
+    # Thread bloqueia acesso para entrar na fila de acesso a regiao critica
+    with condition:
+        # Se adiciona na fila
+        waiting_queue.put(current_thread)
+        print(f"Thread {current_thread.name} aguardando sua vez para acessar a região crítica.")
+        
+        # Thread desbloqueia acesso
+        # Se não for a primeira da fila, dorme e fica travada aqui
+        # Se for a primeira, entra na região crítica
+        condition.wait_for(lambda: waiting_queue.queue[0] == current_thread)
+
+# Função para remover uma thread da fila de acesso a região crítica
+def remover_thread_fila(condition, current_thread, waiting_queue):
+    # Thread bloqueia acesso para se retirar da fila de acesso a regiao critica (deixa de ser a primeira)
+    # Notifica todas as threads na fila. A thread que ver que é a primeira na fila, acessa a região critica
+    with condition:
+        waiting_queue.get()
+        condition.notify_all()
+        print(f"Thread {current_thread.name} saiu da região crítica.")
