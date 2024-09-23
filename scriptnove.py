@@ -5,6 +5,8 @@ import threading
 client_script = "cliente_teste.py"
 #se liga em cima, se der erro puxa pra fora o arquivo pra fora da pasta teste (se ele tiver dentro)
 cont=111111111111111
+cont2 = 1
+cont3 = 2
 
 
 def abrir_terminal(escolhas):
@@ -18,16 +20,18 @@ def abrir_terminal(escolhas):
     subprocess.Popen(comando, shell=True)
 
 # Número de clientes/terminais
-num_clients = 4
+num_clients = 2
 
 # Abrindo múltiplos terminais com os mesmos parâmetros
 for i in range(num_clients):
     
-    escolhas = ['1', '1', '2', '1', str(cont)]
+    escolhas = ['1', str(cont2), str(cont3), '1', str(cont)]
 
     #client_thread = threading.Thread(target=abrir_terminal, args=(escolhas,))
     #client_thread.start()
     abrir_terminal(escolhas)
     cont+=1
+    cont2+=1
+    cont3+=1
     
    

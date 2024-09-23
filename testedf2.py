@@ -1,5 +1,6 @@
 import threading
 import json
+import queue
 from connection import config_server, receber_mensagem, encerrar_conexao, testa_conexao, get_ip_address
 from utils_server import cria_arquivo_grafo, carregar_grafo, encontrar_caminhos, verifica_compras_cpf, verifica_caminho_escolhido, registra_caminho_escolhido, verifica_teste, cidades
 
@@ -10,6 +11,9 @@ PORTA = 65433
 
 # Condition para controlar acesso ordenado à região crítica
 condition = threading.Condition()
+
+# Fila para garantir a ordem de acesso das threads
+waiting_queue = queue.Queue()
 
 # Thread que opera cliente individualmente
 def handle_client(conexao_socket, client_address):
@@ -36,7 +40,13 @@ def handle_client(conexao_socket, client_address):
                 # Região crítica - Outra thread não pode mexer no arquivo enquanto tiver carregando informação do arquivo e
                 # enviando ao cliente
                 with condition:
-                    condition.wait_for(lambda: True)  # Aguarda sua vez na fila
+                    current_thread = threading.get_ident()
+                    waiting_queue.put(current_thread)  # Adiciona à fila
+                    print(f"Thread {current_thread} aguardando sua vez para acessar a região crítica.")
+
+                    condition.wait_for(lambda: waiting_queue.queue[0] == current_thread)  # Aguarda sua vez
+                    print(f"Thread {current_thread} acessando a região crítica.")
+
                     G = carregar_grafo()
                     caminhos = encontrar_caminhos(G, origem, destino)
 
@@ -51,7 +61,9 @@ def handle_client(conexao_socket, client_address):
 
                     verifica_teste(teste, "Caminhos enviados com sucesso")
                 
-                    condition.notify()  # Notifica a próxima thread na fila
+                    waiting_queue.get()  # Remove a thread da fila
+                    condition.notify_all()  # Notifica a próxima thread
+                    print(f"Thread {current_thread} notificou saiu antes a região crítica.")
 
             # Se cliente enviou flag Comprar, servidor retorna sucesso de compra ou novos caminhos
             elif flag == "Comprar":
@@ -71,7 +83,13 @@ def handle_client(conexao_socket, client_address):
                 # Região crítica - Outra thread não pode mexer no arquivo enquanto tiver carregando informação do arquivo ou
                 # gravando informação nele, e enviando ao cliente
                 with condition:
-                    condition.wait_for(lambda: True)  # Aguarda sua vez na fila
+                    current_thread = threading.get_ident()
+                    waiting_queue.put(current_thread)  # Adiciona à fila
+                    print(f"Thread {current_thread} aguardando sua vez para acessar a região crítica.")
+
+                    condition.wait_for(lambda: waiting_queue.queue[0] == current_thread)  # Aguarda sua vez
+                    print(f"Thread {current_thread} acessando a região crítica.")
+
                     # Pega informação atual do grafo
                     G = carregar_grafo()
 
@@ -107,7 +125,9 @@ def handle_client(conexao_socket, client_address):
 
                         verifica_teste(teste, "Compra registrada com sucesso")
                 
-                    condition.notify()  # Notifica a próxima thread na fila
+                    waiting_queue.get()  # Remove a thread da fila
+                    condition.notify_all()  # Notifica a próxima thread
+                    print(f"Thread {current_thread} notificou saiu antes a região crítica.")
             
             # Se cliente enviou flag Passagens_Compradas, servidor retorna passagens encontradas ou nenhuma passagem encontrada
             elif flag == "Passagens_Compradas":
@@ -117,11 +137,19 @@ def handle_client(conexao_socket, client_address):
                 # Região crítica - Outra thread não pode mexer no arquivo enquanto tiver carregando informação do arquivo ou
                 # gravando informação nele
                 with condition:
-                    condition.wait_for(lambda: True)  # Aguarda sua vez na fila
+                    current_thread = threading.get_ident()
+                    waiting_queue.put(current_thread)  # Adiciona à fila
+                    print(f"Thread {current_thread} aguardando sua vez para acessar a região crítica.")
+
+                    condition.wait_for(lambda: waiting_queue.queue[0] == current_thread)  # Aguarda sua vez
+                    print(f"Thread {current_thread} acessando a região crítica.")
+
                     # Pode vir vazio se não encontrou passagens no CPF
                     compras = verifica_compras_cpf(cpf)
                 
-                    condition.notify()  # Notifica a próxima thread na fila
+                    waiting_queue.get()  # Remove a thread da fila
+                    condition.notify_all()  # Notifica a próxima thread
+                    print(f"Thread {current_thread} notificou saiu antes a região crítica.")
 
                 # Lista de dicionários. Cada dicionário = Uma compra de determinado CPF
                 serializa = json.dumps(compras)

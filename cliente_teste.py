@@ -4,8 +4,8 @@ from utils_client import clear_terminal, imprime_divisoria, sleep_clear, cidades
 from interface import mostrar_menu_principal, selecionar_cidades, selecionar_caminho, verificar_passagens_compradas, exibe_compras_cpf
 from connection import conecta_server, encerrar_conexao, enviar_e_receber_mensagem
 import sys 
-IP = '172.16.103.7'
-#IP = 'localhost'
+#IP = '172.16.103.7'
+IP = 'localhost'
 
 PORTA = 65433
 cont = True
