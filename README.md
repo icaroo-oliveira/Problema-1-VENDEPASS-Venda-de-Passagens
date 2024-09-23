@@ -38,7 +38,7 @@ Formato das mensagens: Em relação ao formato das mensagens, o protocolo adota 
 De outro modo, Servidor → Cliente (servidor enviando mensagem), sempre tamanho 2, como mostra a Figura 2:
 
 <p align="center">
-  <img src="Imagens/mensagem_servidor.png" width = "400" />
+  <img src="Imagens/mensagem_servidor.png" width = "200" />
 </p>
 <p align="center"><strong> Figura 2. Mensagem Servidor -> Cliente </strong></p>
 <p align="center"><strong>Fonte: Autores
@@ -59,10 +59,13 @@ A estrutura das mensagens sempre são respeitadas, mesmo que alguns campos possa
 
 Mensagens e ordem das mensagens:  As mensagens possíveis por parte do cliente são: 
 
+<div align="center">
+
 | Mensagem (Cliente)                        | Significado                                                |
 |-------------------------------------------|------------------------------------------------------------|
 | "Caminhos, [Origem], [Destino], ,”        | Solicitando caminhos entre [Origem] e [Destino].            |
 | ”Comprar, , ,[Cpf],[Caminho]”             | Comprando uma passagem para o [Caminho].                    |
 | “Passagens_Compradas, , ,[Cpf]”           | Solicitando passagens compradas por [Cpf].                  |
 
+</div>
 
