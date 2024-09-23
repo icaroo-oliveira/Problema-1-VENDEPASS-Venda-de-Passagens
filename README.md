@@ -35,7 +35,9 @@ Formato das mensagens: Em relação ao formato das mensagens, o protocolo adota 
 </strong></p>
 
 
+
 De outro modo, Servidor → Cliente (servidor enviando mensagem), sempre tamanho 2, como mostra a Figura 2:
+
 
 
 <p align="center">
