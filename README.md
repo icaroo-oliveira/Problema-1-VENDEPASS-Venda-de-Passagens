@@ -105,11 +105,15 @@ O grafo da Figura 5 foi usado como base para composição de trechos e caminhos,
 
 **Tratamento de conexões simultâneas e Tratamento de Concorrência**:O sistema não permite a compra de forma 100% paralela. Apesar de ser possível diversos clientes estarem comprando - com múltiplas threads sendo disparadas  - (cada thread sendo um cliente), quando o processamento de uma compra acontece, é usado um Mutex para travar aquela região de acesso aos dados dos arquivos, isso é feito para que não exista erros de disponibilidade de passagens durante a compra. Enquanto a região está travada, a outra solicitação de acesso ao arquivo fica esperando até que o ‘’lock’’ seja suspenso. Para otimizar ainda mais o paralelismo poderia retirar o ‘’lock’’ nos  momentos de somente leitura de dados, apesar que fazendo isso, existiria a chance de dados desatualizados serem repassados para outros usuários. Poderia também aplicar uma forma de verificação baseada na interseccionalidade entre trechos e rotas, só ‘’travando’’ uma compra se existisse uma compra atual, que tivesse trechos em comum. 
 
+
 **Documentação do código**:O código está completamente comentado e documentado.
+
 
 **Emprego do Docker**:O código faz uso da conteinerização com Docker, para, como mencionado anteriormente, proporcionar uma ambiente seguro e confiável para testes. Foi criado um Docker para o servidor, com uma imagem 3.12-slim, instalando as bibliotecas necessárias para grafo e sub-módulos além do ‘’EXPOSE’’ na porta usada. Para o Docker do cliente, foi a mesma imagem python e foi carregado os sub-módulos. Por fim, criou-se um Docker Compose, para orquestrar e criar uma rede que ligasse o Docker do servidor com o do cliente.
 
+
 **Desempenho e avaliação**:O sistema faz uso de Threads, sendo que cada uma é disparada para cada solicitação do cliente, isso faz com que exista uma redução no tempo entre solicitações dos mais diversos clientes. Além disso, a fila de solicitação para requisições foi ajustada para 50. De modo que é possível armazenar 50 requisições enquanto uma está sendo passada para uma thread. O desempenho do sistema foi satisfatório. Foi feito um script que criou 50 terminais solicitando a mesma coisa, o servidor conseguiu processar todas solicitações e não deixou que uma mesma passagem fosse comprada quando não estivesse mais disponível. 
+
 
 **Confiabilidade da solução**:Foram feitos diversos testes em relação à desconexão, de modo que o sistema continuou funcionando.
 * O primeiro foi quando o servidor é desconectado, após os trajetos serem retornados pelo servidor, se o cliente tentar enviar dados falhará pois o servidor não estará disponível. Mas se o cabo do servidor for conectado, é possível prosseguir a compra a partir daquele momento, a base disso é o fato do servidor ser “stateless”.
