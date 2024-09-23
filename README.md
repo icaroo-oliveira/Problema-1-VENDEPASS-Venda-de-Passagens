@@ -10,10 +10,27 @@ Como resultado, criou-se uma estrutura servidor-cliente onde um servidor pode ac
 
 ## Metodologia e Resultados
 
-Arquitetura: O sistema apresenta uma estrutura onde um servidor dispõe de um conjunto de métodos para troca de informações com os clientes. Esse servidor é apoiado por dois arquivos no formato JSON. O primeiro para armazenamento de informações de passagens (que registrará informações como distância, trajeto, valor e outros, para uma pessoa) e o segundo, será um arquivo que conterá em si os trechos e assentos disponíveis para aquele trecho, além de também salvar informações sobre os passageiros, como o CPF. 
+**Arquitetura**: O sistema apresenta uma estrutura onde um servidor dispõe de um conjunto de métodos para troca de informações com os clientes. Esse servidor é apoiado por dois arquivos no formato JSON. O primeiro para armazenamento de informações de passagens (que registrará informações como distância, trajeto, valor e outros, para uma pessoa) e o segundo, será um arquivo que conterá em si os trechos e assentos disponíveis para aquele trecho, além de também salvar informações sobre os passageiros, como o CPF. 
 
 Os módulos do cliente são apoiados por sub-módulos:
 * O primeiro está relacionado a utilidades, como cálculo de distâncias e limpeza de terminais (utils_cliente).
 * O segundo é chamado ‘’interface’’. Que é um sub-módulo responsável por toda interatividade por parte do cliente. Contém métodos que mostram menus, seleção de cidades de origem, destino e caminho (conjunto de trechos) escolhido. É um “módulo meio” responsável por coletar ‘’inputs’’ e passar para a parte de processamento.
-*O último, comum também ao servidor, é o ‘’connection’’, ele é o responsável por implementar toda lógica de comunicação. De funções usadas pelo cliente deste módulo estão: conectar cliente com o servidor, enviar e receber mensagens (para o servidor), e desconexão (encerrar conexão) com servidor, além de funções de teste de conexão, usadas para casos onde a queda ocorre.
+* O último, comum também ao servidor, é o ‘’connection’’, ele é o responsável por implementar toda lógica de comunicação. De funções usadas pelo cliente deste módulo estão: conectar cliente com o servidor, enviar e receber mensagens (para o servidor), e desconexão (encerrar conexão) com servidor, além de funções de teste de conexão, usadas para casos onde a queda ocorre.
+
+Já o módulo do servidor é apoiado por dois sub-módulos:
+* O primeiro é relacionado a utilidades do servidor, como a criação do grafo de trechos (já predefinido), carregar o grafo (trechos de viagem), carregar as passagens já compradas, salvar grafos e passagens, e encontrar caminhos.
+* O último, é o ‘’connection’’, em si está contido funções de configuração de servidor (criação e configuração do socket, associação a uma endereço/porta e estabelecer o número máximo de conexão da fila), receber dados, encerrar conexão e testar conexão (usado quando é necessário saber se ainda existe conexão).
+
+**Paradigma de Comunicação**: O paradigma aplicado foi o "Stateless", visto que cada nova requisição é tratada de forma independente e separada de outras pelo servidor, de forma que o servidor não mantém informações do cliente entre as requisições. Foi escolhido esse paradigma tanto pela escalabilidade - podendo replicar o servidor - de modo que as mais diversas solicitações, nos mais diversos ‘’estágios de compra’’ pudessem ser tratado por qualquer instância desse ‘’server’’, mesmo se uma instância caísse - e até se essa  instância caísse e retornasse - a outra poderia continuar, visto que o servidor não mantém informações. Além disso, existe a redução de complexidade, no sentido de ficar salvando estados. Por fim, para a ideia proposta de conexão somente para envio e recebimento de dados e uso de flags, esse foi o melhor modelo para o servidor.
+
+**Protocolo de comunicação**: Formato das mensagens: Em relação ao formato das mensagens, o protocolo adota uma estrutura de mensagem como uma ‘’string’’, onde cada campo é separado por vírgulas. Abaixo as mensagem para uma comunicação Cliente → Servidor (cliente enviando mensagem), sempre de tamanho 5:
+
+
+<p align="center">
+  <img src="Imagens/mensagem_cliente.png" width = "400" />
+</p>
+<p align="center"><strong> Mensagem Cliente -> Servidor </strong></p>
+<p align="center"><strong>Fonte: Autores
+</strong></p>
+
 
