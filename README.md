@@ -32,7 +32,6 @@ Formato das mensagens: Em relação ao formato das mensagens, o protocolo adota 
   <img src="Imagens/mensagem_cliente.png" width = "600" />
 </p>
 <p align="center"><strong> Figura 1. Mensagem Cliente -> Servidor </strong></p>
-<p align="center"><strong>Fonte: Autores
 </strong></p>
 
 De outro modo, Servidor → Cliente (servidor enviando mensagem), sempre tamanho 2, como mostra a Figura 2:
