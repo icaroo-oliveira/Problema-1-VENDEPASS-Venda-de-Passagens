@@ -69,3 +69,17 @@ Mensagens e ordem das mensagens:  As mensagens possíveis por parte do cliente s
 
 </div>
 
+Por parte do servidor:
+
+<div align="center">
+  
+| Mensagem (Servidor)                        | Significado                                                |
+|--------------------------------------------|------------------------------------------------------------|
+| “Caminhos_Encontrados, [Caminhos]”         | Retornando caminhos entre Origem-Destino.                  |
+| “Novos_Caminhos_Encontrados, [Caminhos]”   | Se o caminho escolhido não existe mais, retorna novos.      |
+| “Compra_Feita, ”                           | Confirmando a compra de uma passagem pelo [Caminho].        |
+| “Passagens_Encontradas, [Passagens]”       | Passagens compradas por [Cpf].                             |
+| “Flag_Invalida, ”                          | Operação não identificada.                                 |
+
+</div>
+
