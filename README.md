@@ -34,7 +34,9 @@ Formato das mensagens: Em relação ao formato das mensagens, o protocolo adota 
 <p align="center"><strong> Figura 1. Mensagem Cliente -> Servidor </strong></p>
 </strong></p>
 
+
 De outro modo, Servidor → Cliente (servidor enviando mensagem), sempre tamanho 2, como mostra a Figura 2:
+
 
 <p align="center">
   <img src="Imagens/mensagem_servidor.png" width = "300" />
@@ -47,6 +49,7 @@ Independente de quem envie a informação, o outro lado sempre tem uma forma de 
 A estrutura das mensagens sempre são respeitadas, mesmo que alguns campos possam ter valor vazio. Todos os campos são autoexplicativos, exceto a “Flag”. Na tabela abaixo, as “Flags” na linha “Cliente” indicam uma comunicação do tipo Cliente → Servidor, de modo que quem cria a “Flag” e envia é o cliente. Na linha “Servidor”, o contrário acontece.
 
 * Flag → indica o tipo de solicitação e como o outro lado deve respondê-la, na Figura 3 as possíveis ‘’flags’’:
+
 
 <p align="center">
   <img src="Imagens/flags.png" width = "600" />
@@ -92,16 +95,19 @@ A Figura 4, exemplifica o fluxo de mensagens para uma compra bem sucedida:
 <p align="center"><strong> Figura 4. Fluxo de mensagens para uma compra bem sucedida </strong></p>
 </strong></p>
 
+
 **Formatação e tratamento de dados**:Para formatação de dados foi usado o sistema JSON, que é um sistema de arquivo baseado em dicionários e listas. Com o JSON foram criados dois tipos de arquivos como já citado anteriormente, um para passagens e outro para trechos e caminhos. A estrutura do arquivo para passagens é um dicionário que tem como chaves o CPF e valor uma lista que contém todas as compras desse CPF. Cada compra é um dicionário com os caminhos, assentos, distância e valor da viagem como chaves.
 Já o arquivo de trechos, são os diversos trechos que, quando combinados formam um caminho. Tem a estrutura de um dicionário onde as chaves são tuplas que contém um “trecho” (ex: “São paulo”, “Rio de Janeiro”) e valor um dicionário que contém como chaves distância, assentos e CPFs das pessoas que viajarão por aquele trecho) .
 
 O grafo da Figura 5 foi usado como base para composição de trechos e caminhos, a sigla do estado é usada para referenciar as capitais dos estados.
+
 
 <p align="center">
   <img src="Imagens/grafo.png" width = "600" />
 </p>
 <p align="center"><strong> Figura 5. Grafo de rotas e caminhos </strong></p>
 </strong></p>
+
 
 **Tratamento de conexões simultâneas e Tratamento de Concorrência**:O sistema não permite a compra de forma 100% paralela. Apesar de ser possível diversos clientes estarem comprando - com múltiplas threads sendo disparadas  - (cada thread sendo um cliente), quando o processamento de uma compra acontece, é usado um Mutex para travar aquela região de acesso aos dados dos arquivos, isso é feito para que não exista erros de disponibilidade de passagens durante a compra. Enquanto a região está travada, a outra solicitação de acesso ao arquivo fica esperando até que o ‘’lock’’ seja suspenso. Para otimizar ainda mais o paralelismo poderia retirar o ‘’lock’’ nos  momentos de somente leitura de dados, apesar que fazendo isso, existiria a chance de dados desatualizados serem repassados para outros usuários. Poderia também aplicar uma forma de verificação baseada na interseccionalidade entre trechos e rotas, só ‘’travando’’ uma compra se existisse uma compra atual, que tivesse trechos em comum. 
 
