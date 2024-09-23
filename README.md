@@ -23,14 +23,38 @@ Já o módulo do servidor é apoiado por dois sub-módulos:
 
 **Paradigma de Comunicação**: O paradigma aplicado foi o "Stateless", visto que cada nova requisição é tratada de forma independente e separada de outras pelo servidor, de forma que o servidor não mantém informações do cliente entre as requisições. Foi escolhido esse paradigma tanto pela escalabilidade - podendo replicar o servidor - de modo que as mais diversas solicitações, nos mais diversos ‘’estágios de compra’’ pudessem ser tratado por qualquer instância desse ‘’server’’, mesmo se uma instância caísse - e até se essa  instância caísse e retornasse - a outra poderia continuar, visto que o servidor não mantém informações. Além disso, existe a redução de complexidade, no sentido de ficar salvando estados. Por fim, para a ideia proposta de conexão somente para envio e recebimento de dados e uso de flags, esse foi o melhor modelo para o servidor.
 
-**Protocolo de comunicação**: Formato das mensagens: Em relação ao formato das mensagens, o protocolo adota uma estrutura de mensagem como uma ‘’string’’, onde cada campo é separado por vírgulas. Abaixo as mensagem para uma comunicação Cliente → Servidor (cliente enviando mensagem), sempre de tamanho 5:
+**Protocolo de comunicação**: 
+- Formato das mensagens: Em relação ao formato das mensagens, o protocolo adota uma estrutura de mensagem como uma ‘’string’’, onde cada campo é separado por vírgulas. Abaixo as mensagem para uma comunicação Cliente → Servidor (cliente enviando mensagem), sempre de tamanho 5, como mostra a Figura 1:
 
 
 <p align="center">
-  <img src="Imagens/mensagem_cliente.png" width = "400" />
+  <img src="Imagens/mensagem_cliente.png" width = "600" />
 </p>
-<p align="center"><strong> Mensagem Cliente -> Servidor </strong></p>
+<p align="center"><strong> Figura 1. Mensagem Cliente -> Servidor </strong></p>
 <p align="center"><strong>Fonte: Autores
 </strong></p>
 
+De outro modo, Servidor → Cliente (servidor enviando mensagem), sempre tamanho 2, como mostra a Figura 2:
+
+<p align="center">
+  <img src="Imagens/mensagem_servidor.png" width = "600" />
+</p>
+<p align="center"><strong> Figura 2. Mensagem Servidor -> Cliente </strong></p>
+<p align="center"><strong>Fonte: Autores
+</strong></p>
+
+Independente de quem envie a informação, o outro lado sempre tem uma forma de recebê-la. O último campo da ‘’string’’ acima é flexível, podendo retornar as passagens do usuário também.
+
+A estrutura das mensagens sempre são respeitadas, mesmo que alguns campos possam ter valor vazio. Todos os campos são autoexplicativos, exceto a “Flag”. Na tabela abaixo, as “Flags” na linha “Cliente” indicam uma comunicação do tipo Cliente → Servidor, de modo que quem cria a “Flag” e envia é o cliente. Na linha “Servidor”, o contrário acontece.
+
+* Flag → indica o tipo de solicitação e como o outro lado deve respondê-la, na Figura 3 as possíveis ‘’flags’’:
+
+<p align="center">
+  <img src="Imagens/flags.png" width = "600" />
+</p>
+<p align="center"><strong> Figura 3. Tipos de Flag por entidade </strong></p>
+<p align="center"><strong>Fonte: Autores
+</strong></p>
+
+- Mensagens e ordem das mensagens:  As mensagens possíveis por parte do cliente são: 
 
