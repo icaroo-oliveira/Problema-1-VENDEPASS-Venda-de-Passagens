@@ -24,6 +24,7 @@ Já o módulo do servidor é apoiado por dois sub-módulos:
 **Paradigma de Comunicação**: O paradigma aplicado foi o "Stateless", visto que cada nova requisição é tratada de forma independente e separada de outras pelo servidor, de forma que o servidor não mantém informações do cliente entre as requisições. Foi escolhido esse paradigma tanto pela escalabilidade - podendo replicar o servidor - de modo que as mais diversas solicitações, nos mais diversos ‘’estágios de compra’’ pudessem ser tratado por qualquer instância desse ‘’server’’, mesmo se uma instância caísse - e até se essa  instância caísse e retornasse - a outra poderia continuar, visto que o servidor não mantém informações. Além disso, existe a redução de complexidade, no sentido de ficar salvando estados. Por fim, para a ideia proposta de conexão somente para envio e recebimento de dados e uso de flags, esse foi o melhor modelo para o servidor.
 
 **Protocolo de comunicação**: 
+
 Formato das mensagens: Em relação ao formato das mensagens, o protocolo adota uma estrutura de mensagem como uma ‘’string’’, onde cada campo é separado por vírgulas. Abaixo as mensagem para uma comunicação Cliente → Servidor (cliente enviando mensagem), sempre de tamanho 5, como mostra a Figura 1:
 
 
@@ -57,4 +58,11 @@ A estrutura das mensagens sempre são respeitadas, mesmo que alguns campos possa
 </strong></p>
 
 Mensagens e ordem das mensagens:  As mensagens possíveis por parte do cliente são: 
+
+| Mensagem (Cliente)                        | Significado                                                |
+|-------------------------------------------|------------------------------------------------------------|
+| "Caminhos, [Origem], [Destino], ,”        | Solicitando caminhos entre [Origem] e [Destino].            |
+| ”Comprar, , ,[Cpf],[Caminho]”             | Comprando uma passagem para o [Caminho].                    |
+| “Passagens_Compradas, , ,[Cpf]”           | Solicitando passagens compradas por [Cpf].                  |
+
 
