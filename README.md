@@ -87,7 +87,7 @@ A Figura 4, exemplifica o fluxo de mensagens para uma compra bem sucedida:
 
 
 <p align="center">
-  <img src="Imagens/fluxo_compra.png" width = "600" />
+  <img src="Imagens/fluxo_compra.jpg" width = "600" />
 </p>
 <p align="center"><strong> Figura 4. Fluxo de mensagens para uma compra bem sucedida </strong></p>
 </strong></p>
