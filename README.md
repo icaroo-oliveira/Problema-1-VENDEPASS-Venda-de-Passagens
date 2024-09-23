@@ -54,7 +54,8 @@ A estrutura das mensagens sempre são respeitadas, mesmo que alguns campos possa
 <p align="center"><strong> Figura 3. Tipos de Flag por entidade </strong></p>
 </strong></p>
 
-Mensagens e ordem das mensagens:  As mensagens possíveis por parte do cliente são: 
+
+As mensagens possíveis por parte do cliente são: 
 
 
 <div align="center">
@@ -82,5 +83,40 @@ Por parte do servidor:
 
 </div>
 
-Fluxo de mensagens para uma compra bem sucedida:
+A Figura 4, exemplifica o fluxo de mensagens para uma compra bem sucedida:
+
+
+<p align="center">
+  <img src="Imagens/fluxo_compra.png" width = "600" />
+</p>
+<p align="center"><strong> Figura 4. Fluxo de mensagens para uma compra bem sucedida </strong></p>
+</strong></p>
+
+**Formatação e tratamento de dados**:Para formatação de dados foi usado o sistema JSON, que é um sistema de arquivo baseado em dicionários e listas. Com o JSON foram criados dois tipos de arquivos como já citado anteriormente, um para passagens e outro para trechos e caminhos. A estrutura do arquivo para passagens é um dicionário que tem como chaves o CPF e valor uma lista que contém todas as compras desse CPF. Cada compra é um dicionário com os caminhos, assentos, distância e valor da viagem como chaves.
+Já o arquivo de trechos, são os diversos trechos que, quando combinados formam um caminho. Tem a estrutura de um dicionário onde as chaves são tuplas que contém um “trecho” (ex: “São paulo”, “Rio de Janeiro”) e valor um dicionário que contém como chaves distância, assentos e CPFs das pessoas que viajarão por aquele trecho) .
+
+O grafo da Figura 5 foi usado como base para composição de trechos e caminhos, a sigla do estado é usada para referenciar as capitais dos estados.
+
+<p align="center">
+  <img src="Imagens/grafo.png" width = "600" />
+</p>
+<p align="center"><strong> Figura 5. Grafo de rotas e caminhos </strong></p>
+</strong></p>
+
+**Tratamento de conexões simultâneas e Tratamento de Concorrência**:O sistema não permite a compra de forma 100% paralela. Apesar de ser possível diversos clientes estarem comprando - com múltiplas threads sendo disparadas  - (cada thread sendo um cliente), quando o processamento de uma compra acontece, é usado um Mutex para travar aquela região de acesso aos dados dos arquivos, isso é feito para que não exista erros de disponibilidade de passagens durante a compra. Enquanto a região está travada, a outra solicitação de acesso ao arquivo fica esperando até que o ‘’lock’’ seja suspenso. Para otimizar ainda mais o paralelismo poderia retirar o ‘’lock’’ nos  momentos de somente leitura de dados, apesar que fazendo isso, existiria a chance de dados desatualizados serem repassados para outros usuários. Poderia também aplicar uma forma de verificação baseada na interseccionalidade entre trechos e rotas, só ‘’travando’’ uma compra se existisse uma compra atual, que tivesse trechos em comum. 
+
+**Documentação do código**:O código está completamente comentado e documentado.
+
+**Emprego do Docker**:O código faz uso da conteinerização com Docker, para, como mencionado anteriormente, proporcionar uma ambiente seguro e confiável para testes. Foi criado um Docker para o servidor, com uma imagem 3.12-slim, instalando as bibliotecas necessárias para grafo e sub-módulos além do ‘’EXPOSE’’ na porta usada. Para o Docker do cliente, foi a mesma imagem python e foi carregado os sub-módulos. Por fim, criou-se um Docker Compose, para orquestrar e criar uma rede que ligasse o Docker do servidor com o do cliente.
+
+**Desempenho e avaliação**:O sistema faz uso de Threads, sendo que cada uma é disparada para cada solicitação do cliente, isso faz com que exista uma redução no tempo entre solicitações dos mais diversos clientes. Além disso, a fila de solicitação para requisições foi ajustada para 50. De modo que é possível armazenar 50 requisições enquanto uma está sendo passada para uma thread. O desempenho do sistema foi satisfatório. Foi feito um script que criou 50 terminais solicitando a mesma coisa, o servidor conseguiu processar todas solicitações e não deixou que uma mesma passagem fosse comprada quando não estivesse mais disponível. 
+
+**Confiabilidade da solução**:Foram feitos diversos testes em relação à desconexão, de modo que o sistema continuou funcionando.
+* O primeiro foi quando o servidor é desconectado, após os trajetos serem retornados pelo servidor, se o cliente tentar enviar dados falhará pois o servidor não estará disponível. Mas se o cabo do servidor for conectado, é possível prosseguir a compra a partir daquele momento, a base disso é o fato do servidor ser “stateless”.
+* O segundo teste é parecido com o primeiro, mas agora se o cliente é desconectado, logo após a fase de envio de origem e destino, o cliente consegue voltar e escolher/comprar entre um dos caminhos retornados dá origem ao destino.
+
+Foi adicionado tanto para cliente quanto para o servidor um tempo de espera para enviar, receber e se conectar (entre si), usada em casos onde após um tempo excedido (10 segundos) é retornado um erro de temporização. Além disso, excedido esse tempo, o cliente volta sempre para o início do estágio onde estava.
+
+# Conclusão
+
 
