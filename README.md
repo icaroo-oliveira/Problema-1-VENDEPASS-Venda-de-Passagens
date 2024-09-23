@@ -6,7 +6,7 @@ No mundo atual, faz-se necessário - em muitos casos - a fragmentação de uma e
 
 Para a implementação, foi usado o subsistema de rede TCP/IP, usando uma API socket básica para comunicação. O projeto em sua completude foi feito usando a linguagem de programação Python, que oferecia recursos diversos como Mutexes e Threads, que foram de vital importância para o problema, principalmente no tocante ao acesso simultâneo. Além disso, foi usado uma biblioteca de grafos para organização de rotas, por distância e disponibilidade. Por fim, para uma melhor confiabilidade no uso e teste, foi adotado o uso de conteinerização com o Docker, promovendo estabilidade nos mais variados ambientes de utilização.
 
-Como resultado, criou-se uma estrutura servidor-cliente onde um servidor pode aceitar diversos clientes simultaneamente de forma que um cliente não interfira com a compra do outro. Existe ainda estabilidade em relação a conexão, no sentido que ela ocorre num período pequeno - somente no intervalo de envio e recebimento de dados - já ocorrendo a desconexão. No geral o sistema é ”stateless”, por não guardar informações relevantes entre requisições e pela estrutura supracitada.
+Como resultado, criou-se uma estrutura servidor-cliente onde um servidor pode aceitar diversos clientes simultaneamente de forma que um cliente não interfira com a compra do outro. Existe ainda estabilidade em relação a conexão, no sentido que ela ocorre num período pequeno - somente no intervalo de envio e recebimento de dados - já ocorrendo a desconexão. No geral o sistema é ”stateless” (OSSAMA,2023), por não guardar informações relevantes entre requisições e pela estrutura supracitada.
 
 ## Metodologia e Resultados
 
@@ -21,7 +21,7 @@ Já o módulo do servidor é apoiado por dois sub-módulos:
 * O primeiro é relacionado a utilidades do servidor, como a criação do grafo de trechos (já predefinido), carregar o grafo (trechos de viagem), carregar as passagens já compradas, salvar grafos e passagens, e encontrar caminhos.
 * O último, é o ‘’connection’’, em si está contido funções de configuração de servidor (criação e configuração do socket, associação a uma endereço/porta e estabelecer o número máximo de conexão da fila), receber dados, encerrar conexão e testar conexão (usado quando é necessário saber se ainda existe conexão).
 
-**Paradigma de Comunicação**: O paradigma aplicado foi o "Stateless", visto que cada nova requisição é tratada de forma independente e separada de outras pelo servidor, de forma que o servidor não mantém informações do cliente entre as requisições. Foi escolhido esse paradigma tanto pela escalabilidade - podendo replicar o servidor - de modo que as mais diversas solicitações, nos mais diversos ‘’estágios de compra’’ pudessem ser tratado por qualquer instância desse ‘’server’’, mesmo se uma instância caísse - e até se essa instância caísse e retornasse - a outra poderia continuar, visto que o servidor não mantém informações. Além disso, existe a redução de complexidade, no sentido de ficar salvando estados. Por fim, para a ideia proposta de conexão somente para envio e recebimento de dados e uso de flags, esse foi o melhor modelo para o servidor.
+**Paradigma de Comunicação**: O paradigma aplicado foi o "Stateless" (OSSAMA,2023), visto que cada nova requisição é tratada de forma independente e separada de outras pelo servidor, de forma que o servidor não mantém informações do cliente entre as requisições. Foi escolhido esse paradigma tanto pela escalabilidade - podendo replicar o servidor - de modo que as mais diversas solicitações, nos mais diversos ‘’estágios de compra’’ pudessem ser tratado por qualquer instância desse ‘’server’’, mesmo se uma instância caísse - e até se essa instância caísse e retornasse - a outra poderia continuar, visto que o servidor não mantém informações. Além disso, existe a redução de complexidade, no sentido de ficar salvando estados. Por fim, para a ideia proposta de conexão somente para envio e recebimento de dados e uso de flags, esse foi o melhor modelo para o servidor.
 
 **Protocolo de comunicação**: 
 
@@ -104,7 +104,7 @@ A Figura 4, exemplifica o fluxo de mensagens para uma compra bem sucedida:
 </strong></p>
 
 
-**Formatação e tratamento de dados**:Para formatação de dados foi usado o sistema JSON, que é um sistema de arquivo baseado em dicionários e listas. Com o JSON foram criados dois tipos de arquivos como já citado anteriormente, um para passagens e outro para trechos e caminhos. A estrutura do arquivo para passagens é um dicionário que tem como chaves o CPF e valor uma lista que contém todas as compras desse CPF. Cada compra é um dicionário com os caminhos, assentos, distância e valor da viagem como chaves.
+**Formatação e tratamento de dados**:Para formatação de dados foi usado o sistema JSON (Website JSON, 2024), que é um sistema de arquivo baseado em dicionários e listas. Com o JSON foram criados dois tipos de arquivos como já citado anteriormente, um para passagens e outro para trechos e caminhos. A estrutura do arquivo para passagens é um dicionário que tem como chaves o CPF e valor uma lista que contém todas as compras desse CPF. Cada compra é um dicionário com os caminhos, assentos, distância e valor da viagem como chaves.
 Já o arquivo de trechos, são os diversos trechos que, quando combinados formam um caminho. Tem a estrutura de um dicionário onde as chaves são tuplas que contém um “trecho” (ex: “São paulo”, “Rio de Janeiro”) e valor um dicionário que contém como chaves distância, assentos e CPFs das pessoas que viajarão por aquele trecho) .
 
 O grafo da Figura 5 foi usado como base para composição de trechos e caminhos, a sigla do estado é usada para referenciar as capitais dos estados.
@@ -123,10 +123,10 @@ O grafo da Figura 5 foi usado como base para composição de trechos e caminhos,
 **Documentação do código**:O código está completamente comentado e documentado.
 
 
-**Emprego do Docker**:O código faz uso da conteinerização com Docker, para, como mencionado anteriormente, proporcionar uma ambiente seguro e confiável para testes. Foi criado um Docker para o servidor, com uma imagem 3.12-slim, instalando as bibliotecas necessárias para grafo e sub-módulos além do ‘’EXPOSE’’ na porta usada. Para o Docker do cliente, foi a mesma imagem python e foi carregado os sub-módulos. Por fim, criou-se um Docker Compose, para orquestrar e criar uma rede que ligasse o Docker do servidor com o do cliente.
+**Emprego do Docker**:O código faz uso da conteinerização com Docker, para, como mencionado anteriormente, proporcionar uma ambiente seguro e confiável para testes (RED HAT, 2024). Foi criado um Docker para o servidor, com uma imagem 3.12-slim, instalando as bibliotecas necessárias para grafo e sub-módulos além do ‘’EXPOSE’’ na porta usada. Para o Docker do cliente, foi a mesma imagem python e foi carregado os sub-módulos. Por fim, criou-se um Docker Compose, para orquestrar e criar uma rede que ligasse o Docker do servidor com o do cliente.
 
 
-**Desempenho e avaliação**:O sistema faz uso de Threads, sendo que cada uma é disparada para cada solicitação do cliente, isso faz com que exista uma redução no tempo entre solicitações dos mais diversos clientes. Além disso, a fila de solicitação para requisições foi ajustada para 50. De modo que é possível armazenar 50 requisições enquanto uma está sendo passada para uma thread. O desempenho do sistema foi satisfatório. Foi feito um script que criou 50 terminais solicitando a mesma coisa, o servidor conseguiu processar todas solicitações e não deixou que uma mesma passagem fosse comprada quando não estivesse mais disponível. 
+**Desempenho e avaliação**:O sistema faz uso de Threads (linhas de execuções), sendo que cada uma é disparada para cada solicitação do cliente, isso faz com que exista uma redução no tempo entre solicitações dos mais diversos clientes. Além disso, a fila de solicitação para requisições foi ajustada para 50. De modo que é possível armazenar 50 requisições enquanto uma está sendo passada para uma thread. O desempenho do sistema foi satisfatório. Foi feito um script que criou 50 terminais solicitando a mesma coisa, o servidor conseguiu processar todas solicitações e não deixou que uma mesma passagem fosse comprada quando não estivesse mais disponível. 
 
 
 **Confiabilidade da solução**:Foram feitos diversos testes em relação à desconexão, de modo que o sistema continuou funcionando.
@@ -139,3 +139,10 @@ Foi adicionado tanto para cliente quanto para o servidor um tempo de espera para
 
 Por fim, foi possível criar um sistema servidor-cliente robusto e resistente a a falhas, com forma maleável e eficaz. O fato de não haver salvamento de informações por parte do servidor, bem como as conexão só ocorrerem no momento de envio da mensagem, faz desse sistema bastante seguro. O servidor aceita múltiplas linhas de execução (Threads) e possuí segurança no que diz respeito a acesso e segurança dos dados, evitando problemas como compras de uma passagem não mais disponível. De melhoras para o sistema, um sistema de cache para maior velocidade de processamento seria uma adição bem-vinda para o sistema, de forma adicionar ainda mais eficácia do servidor no processamento de requisições. No mais foi possível criar contêiner para o servidor e cliente, proporcionando um ambiente de testagem seguro.
 
+# Referências
+
+OSSAMA, Ahmed. Stateless vs Stateful Servers (With Examples). Medium. Disponível em: https://medium.com/@ahmedossama22/stateless-vs-stateful-servers-with-examples-6e37223c028f. Acesso em: 23 set. 2024.
+
+JSON. Introducing JSON. Disponível em: https://www.json.org/json-en.html. Acesso em: 23 set. 2024.
+
+RED HAT. O que é Docker?. Disponível em: https://www.redhat.com/pt-br/topics/containers/what-is-docker. Acesso em: 23 set. 2024.
