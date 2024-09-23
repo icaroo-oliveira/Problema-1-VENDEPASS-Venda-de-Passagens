@@ -38,10 +38,9 @@ Formato das mensagens: Em relação ao formato das mensagens, o protocolo adota 
 De outro modo, Servidor → Cliente (servidor enviando mensagem), sempre tamanho 2, como mostra a Figura 2:
 
 <p align="center">
-  <img src="Imagens/mensagem_servidor.png" width = "200" />
+  <img src="Imagens/mensagem_servidor.png" width = "300" />
 </p>
 <p align="center"><strong> Figura 2. Mensagem Servidor -> Cliente </strong></p>
-<p align="center"><strong>Fonte: Autores
 </strong></p>
 
 Independente de quem envie a informação, o outro lado sempre tem uma forma de recebê-la. O último campo da ‘’string’’ acima é flexível, podendo retornar as passagens do usuário também.
@@ -54,10 +53,10 @@ A estrutura das mensagens sempre são respeitadas, mesmo que alguns campos possa
   <img src="Imagens/flags.png" width = "600" />
 </p>
 <p align="center"><strong> Figura 3. Tipos de Flag por entidade </strong></p>
-<p align="center"><strong>Fonte: Autores
 </strong></p>
 
 Mensagens e ordem das mensagens:  As mensagens possíveis por parte do cliente são: 
+
 
 <div align="center">
 
@@ -71,6 +70,7 @@ Mensagens e ordem das mensagens:  As mensagens possíveis por parte do cliente s
 
 Por parte do servidor:
 
+
 <div align="center">
   
 | Mensagem (Servidor)                        | Significado                                                |
@@ -82,4 +82,6 @@ Por parte do servidor:
 | “Flag_Invalida, ”                          | Operação não identificada.                                 |
 
 </div>
+
+Fluxo de mensagens para uma compra bem sucedida:
 
