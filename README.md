@@ -63,7 +63,9 @@ A estrutura das mensagens sempre são respeitadas, mesmo que alguns campos possa
 As mensagens possíveis por parte do cliente são: 
 
 
+
 <div align="center">
+
 
 | Mensagem (Cliente)                        | Significado                                                |
 |-------------------------------------------|------------------------------------------------------------|
@@ -73,7 +75,10 @@ As mensagens possíveis por parte do cliente são:
 
 </div>
 
+
 Por parte do servidor:
+
+
 
 
 <div align="center">
@@ -85,6 +90,7 @@ Por parte do servidor:
 | “Compra_Feita, ”                           | Confirmando a compra de uma passagem pelo [Caminho].        |
 | “Passagens_Encontradas, [Passagens]”       | Passagens compradas por [Cpf].                             |
 | “Flag_Invalida, ”                          | Operação não identificada.                                 |
+
 
 </div>
 
