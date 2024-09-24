@@ -2,6 +2,8 @@ import socket
 import subprocess
 
 # Função para retornar IP da máquina
+# Parâmetros ->     interface_name: nome da interface de rede para obter endereço IP
+# Retorno ->        endereço IP da interface caso seja bem sucedido ou None caso ocorra algum erro
 def get_ip_address(interface_name):
     try:
         # Executa o comando `ifconfig` e captura a saída
@@ -23,6 +25,9 @@ def get_ip_address(interface_name):
         return None
 
 # Função pra configurar o socket do servidor
+# Parâmetros ->     ip: endereço IP a ser configurado o socket do servidor
+#                   porta: porta a ser configurado o socket do servidor
+# Retorno ->        socket do servidor caso seja bem sucedido ou None caso ocorra algum erro
 def config_server(ip, porta):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -40,6 +45,9 @@ def config_server(ip, porta):
         return None
 
 # Função para cliente conectar ao servidor ( cria socket do cliente )
+# Parâmetros ->     ip: endereço IP a ser configurado o socket do cliente
+#                   porta: porta a ser configurado o socket do cliente
+# Retorno ->        socket do cliente caso seja bem sucedido ou None caso ocorra algum erro
 def conecta_server(ip, porta):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -55,6 +63,9 @@ def conecta_server(ip, porta):
         return None
 
 # Função para enviar dados de cliente pra servidor ou o contrario
+# Parâmetros ->     new_socket: socket que deseja enviar uma mensagem
+#                   mensagem: dado a ser enviado pelo socket
+# Retorno ->        1 caso seja bem sucedido ou None caso ocorra algum erro
 def enviar_mensagem(new_socket, mensagem):
     try:
         new_socket.sendall(mensagem.encode('utf-8'))
@@ -67,6 +78,8 @@ def enviar_mensagem(new_socket, mensagem):
         return None
 
 # Função para receber dados de cliente pra servidor ou o contrario
+# Parâmetros ->     new_socket: socket que deseja receber uma mensagem
+# Retorno ->        mensagem recebida caso seja bem sucedido ou None caso ocorra algum erro
 def receber_mensagem(new_socket):
     try:
         data = new_socket.recv(1024)
@@ -85,6 +98,8 @@ def receber_mensagem(new_socket):
         return None
 
 # Função pra encerrar conexão
+# Parâmetros ->     new_socket: socket que deseja encerrar conexão
+# Retorno ->        Sem retorno
 def encerrar_conexao(new_socket):
     try:
         new_socket.close()
@@ -95,6 +110,9 @@ def encerrar_conexao(new_socket):
 
 # Função para cliente enviar e receber mensagem ao servidor 
 # (sempre que cliente envia mensagem, ele deve esperar resposta do servidor)
+# Parâmetros ->     client_socket: socket do cliente
+#                   mensagem: dado a ser enviado pelo socket
+# Retorno ->        mensagem recebida caso seja bem sucedido ou None caso ocorra algum erro
 def enviar_e_receber_mensagem(client_socket, mensagem):
     data = testa_conexao(client_socket, mensagem)
     if data is None:
@@ -104,6 +122,9 @@ def enviar_e_receber_mensagem(client_socket, mensagem):
 
 # Função para verificar se ainda tem conexão ativa cliente/servidor, antes de enviar dados (evita enviar dados atoa)
 # Caso não exista conexão, evita que cliente ou servidor envie dado para lugar algum
+# Parâmetros ->     new_socket: socket que deseja testar conexão
+#                   mensagem: dado a ser enviado pelo socket
+# Retorno ->        1 caso seja bem sucedido ou None caso ocorra algum erro
 def testa_conexao(new_socket, mensagem):
     # Impede de recv congelar fluxo para esperar dados
     new_socket.setblocking(False)

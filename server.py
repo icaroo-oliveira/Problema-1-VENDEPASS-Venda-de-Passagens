@@ -19,6 +19,9 @@ lock = threading.Lock()
 waiting_queue = queue.Queue()
 
 # Thread que opera cliente individualmente
+# Parâmetros ->     conexao_socket: socket da comunicação com cliente
+#                   client_address: tupla contendo IP e Porta do cliente
+# Retorno ->        Sem retorno
 def handle_client(conexao_socket, client_address):
     try:
         print(f"Conectado a {client_address}")
@@ -138,26 +141,26 @@ def handle_client(conexao_socket, client_address):
                 adicionar_thread_fila(condition, current_thread, waiting_queue)
 
                 # Região crítica - Outra thread não pode mexer no arquivo enquanto tiver carregando informação do arquivo ou
-                # gravando informação nele
+                # gravando informação nele, e enviando ao cliente
                 with lock:
                     print(f"Thread {current_thread.name} acessando a região crítica.")
 
                     # Pode vir vazio se não encontrou passagens no CPF
                     compras = verifica_compras_cpf(cpf)
 
+                    # Lista de dicionários. Cada dicionário = Uma compra de determinado CPF
+                    serializa = json.dumps(compras)
+
+                    mensagem = f"Passagens_Encontradas,{serializa}"
+
+                    # Verifica se cliente deu close() (encerrou conexão)
+                    # Se não encerrou, envia informação indicando exito na compra
+                    teste = testa_conexao(conexao_socket, mensagem)
+
+                    verifica_teste(teste, "Passagens encontradas enviadas com sucesso")
+
                     # Remove thread atual da fila e notifica as outras threads
                     remover_thread_fila(condition, current_thread, waiting_queue)
-
-                # Lista de dicionários. Cada dicionário = Uma compra de determinado CPF
-                serializa = json.dumps(compras)
-
-                mensagem = f"Passagens_Encontradas,{serializa}"
-
-                # Verifica se cliente deu close() (encerrou conexão)
-                # Se não encerrou, envia informação indicando exito na compra
-                teste = testa_conexao(conexao_socket, mensagem)
-
-                verifica_teste(teste, "Passagens encontradas enviadas com sucesso")
 
             # Se cliente enviou flag inválida (não corresponde a nenhuma operação), 
             # servidor retorna informação referente

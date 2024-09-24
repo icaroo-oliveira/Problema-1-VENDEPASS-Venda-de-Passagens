@@ -9,11 +9,15 @@ ARQUIVO_GRAFO = 'grafo.json'
 ARQUIVO_PASSAGENS_COMPRADAS = 'passagens.json'
 
 # Função para calcular valor de um caminho (a cada 100km soma 115 reais)
+# Parâmetros ->     km: quilometragem total de um caminho
+# Retorno ->        valor: preço daquele caminho
 def soma_valor(km):
     valor = (km / 100) * 115
     return round(valor, 2)
 
 # Função para exibir em tela se teste de conexão com cliente deu bom
+# Parâmetros ->     teste: flag que indica se conexão cliente/servidor está ativa
+# Retorno ->        Sem retorno
 def verifica_teste(teste, print_msg):
     if teste:
         print(print_msg)
@@ -95,7 +99,7 @@ def cria_arquivo_grafo():
         # um assento do trecho (ou seja, lista[0] = cpf que comprou assento 1)
         salvar_grafo(G)
 
-# Função que carrega um grafo do arquivo
+# Função que carrega o grafo do arquivo
 def carregar_grafo():
     # Abre arquivo e retorna os dados do grafo
     with open(ARQUIVO_GRAFO, 'r') as arq:
@@ -126,7 +130,9 @@ def carregar_passagens_compradas():
         # Retorna um dicionário vazio se o arquivo não existir (não teve nenhuma compra ainda)
         return {}
 
-# Função que salva um grafo no arquivo (atualiza)
+# Função que salva o grafo no arquivo (atualiza)
+# Parâmetros ->     grafo_att: grafo dos trechos com informações atualizadas para ser salvo em arquivo
+# Retorno ->        Sem retorno
 def salvar_grafo(grafo_att):
     # Novo grafo a ser salvo em arquivo
     dados_novos = {'trecho': []}
@@ -146,12 +152,19 @@ def salvar_grafo(grafo_att):
         json.dump(dados_novos, arq, indent=4)
 
 # Função que salva um dicionário no arquivo (atualiza)
+# Parâmetros ->     dicionario_att: dicionario das passagens com informações atualizadas para ser salvo em arquivo
+# Retorno ->        Sem retorno
 def salvar_passagem_comprada(dicionario_att):
     with open(ARQUIVO_PASSAGENS_COMPRADAS, 'w') as arq:
         json.dump(dicionario_att, arq, indent=4)
 
 # Função que encontra 10 caminhos entre origem e destino, e retorna ordenado considerando distancia total (menor ao maior)
-# Retorna uma lista de tuplas,  1° item da tupla = distancia total dos trechos; 2° item da tupla = lista com os trechos (origem à destino)
+# Parâmetros ->     grafo: grafo dos trechos
+#                   cidade_inicial: cidade origem para encontrar caminhos
+#                   cidade_fim: cidade destino para encontrar caminhos
+# Retorno ->        caminhos: lista de caminhos encontrados
+
+# ps: Retorna uma lista de tuplas,  1° item da tupla = distancia total dos trechos; 2° item da tupla = lista com os trechos (origem à destino)
 # ex:  [
 #           (223, ["curitiba", "cuiabá", "sao paulo"]),
 #           (567, ["curitiba", "bh", "rj", "sao paulo"]),
@@ -184,7 +197,10 @@ def encontrar_caminhos(grafo, cidade_inicial, cidade_fim):
     return caminhos_ordenados
 
 # Função para verificar se existe compras em um CPF
-# Se existir, retorna uma lista de dicionários, onde cada dicionário representa uma compra
+# Parâmetros ->     cpf: cpf de um cliente para verificar suas compras
+# Retorno ->        compras: lista de compras encontradas para um CPF
+
+# Se existir compras, retorna uma lista de dicionários, onde cada dicionário representa uma compra
 # ex: [ 
 #       {'caminho': ["floripa","sla","curitiba"], 'assentos': [1, 3], 'distancia': 234, 'valor': 1000},
 #       {'caminho': ["sp","bh","berlim"], 'assentos': [3, 2], 'distancia': 1345, 'valor': 23954},      
@@ -201,7 +217,13 @@ def verifica_compras_cpf(cpf):
         print("Não achei passagens")
         return []
 
-# Função para registrar nova compra de passagem em um CPF
+# Função para registrar nova compra de passagem em um CPF (salva em arquivo)
+# Parâmetros ->     cpf: cpf do cliente que está comprando uma passagem
+#                   caminho: lista contendo cidades que monta o caminho (trechos)
+#                   distancia: numero em km da distancia total do caminho (soma dos trechos)
+#                   assentos: lista contendo numeração dos assentos em cada trecho que forma o caminho
+# Retorno ->        Sem retorno
+
 # ps: É um dicionário geral onde a chave vai ser o CPF e o valor de cada CPF vai ser uma lista
 # A cada nova compra em um CPF, é adicionado um dicionário nessa lista, logo é uma lista de dicionários
 # ex: {
@@ -216,10 +238,6 @@ def registra_compra(cpf, caminho, distancia, assentos):
     compras =  carregar_passagens_compradas()
 
     # Cria uma nova compra
-    # ps: caminho = lista contendo cidades que monta o caminho (trechos)
-    #     assentos = lista contendo númeração dos assentos em cada trecho que forma o caminho
-    #     distancia = inteiro numero em km da distancia total do caminho (soma dos trechos)
-    #     valor = inteiro indicando valor do caminho
     compra_att = {"caminho": caminho, "assentos": assentos, "distancia": distancia, "valor": soma_valor(distancia)}
     
     # Se já existir uma compra no cpf, adiciona nova compra no cpf (mais um dicionário a lista)
@@ -234,6 +252,9 @@ def registra_compra(cpf, caminho, distancia, assentos):
     salvar_passagem_comprada(compras)
 
 # Função para verificar se caminho escolhido pelo cliente ainda está disponível (compara com o arquivo atual)
+# Parâmetros ->     G: grafo dos trechos atualizado do sistema
+#                   caminho: caminho escolhido pelo cliente
+# Retorno ->        comprar: flag que indica se o caminho ainda está disponível (True) ou não (False)
 def verifica_caminho_escolhido(G, caminho):
     comprar = True
 
@@ -247,7 +268,11 @@ def verifica_caminho_escolhido(G, caminho):
     
     return comprar
 
-# Função para registrar compra de um caminho (atualiza grafo e salva compra de passagem)
+# Função para registrar compra de um caminho (atualiza grafo, salva compra de passagem e atualiza os arquivos)
+# Parâmetros ->     G: grafo com trechos do sistema
+#                   caminho: caminho escolhido pelo cliente
+#                   cpf: cpf do cliente que está comprando o caminho
+# Retorno ->        Sem retorno
 def registra_caminho_escolhido(G, caminho, cpf):
     # Número do assento em cada trecho
     assentos = []
@@ -270,6 +295,10 @@ def registra_caminho_escolhido(G, caminho, cpf):
     registra_compra(cpf, caminho[1], caminho[0], assentos)
 
 # Função para adicionar uma thread na fila de acesso a região crítica
+# Parâmetros ->     condition: mutex para travamento/destravamento de acesso a fila de threads
+#                   current_thread: thread atual que vai se inserir na fila
+#                   waiting_queue: fila de threads
+# Retorno ->        Sem retorno
 def adicionar_thread_fila(condition, current_thread, waiting_queue):
     # Thread bloqueia acesso para entrar na fila de acesso a regiao critica
     with condition:
@@ -283,6 +312,10 @@ def adicionar_thread_fila(condition, current_thread, waiting_queue):
         condition.wait_for(lambda: waiting_queue.queue[0] == current_thread)
 
 # Função para remover uma thread da fila de acesso a região crítica
+# Parâmetros ->     condition: mutex para travamento/destravamento de acesso a fila de threads
+#                   current_thread: thread atual que vai se retirar da fila
+#                   waiting_queue: fila de threads
+# Retorno ->        Sem retorno
 def remover_thread_fila(condition, current_thread, waiting_queue):
     # Thread bloqueia acesso para se retirar da fila de acesso a regiao critica (deixa de ser a primeira)
     # Notifica e acorda todas as threads na fila. A thread que ver que é a primeira na fila, acessa a região critica

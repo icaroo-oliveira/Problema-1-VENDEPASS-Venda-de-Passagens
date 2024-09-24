@@ -15,6 +15,9 @@ def mostrar_menu_principal():
     return escolha
 
 # Função que exibe em tela menu de escolha de origem e destino
+# Parâmetros ->     cidades: lista de cidades disponíneis no sistema
+# Retorno ->        origem: cidade origem escolhida pelo cliente
+#                   destino: cidade destino escolhida pelo cliente
 def selecionar_cidades(cidades):
     imprime_divisoria()
     print("Cidades disponíveis:\n")
@@ -40,6 +43,12 @@ def selecionar_cidades(cidades):
     return origem, destino
 
 # Função que exibe em tela caminhos encontrados de origem a destino
+# Parâmetros ->     cidades: lista de cidades disponíneis no sistema
+#                   origem: cidade origem escolhida pelo cliente
+#                   destino: cidade destino escolhida pelo cliente
+#                   caminhos: lista de caminhos encontrados retornados pelo servidor
+# Retorno ->        escolha: entrada do cliente do caminho escolhido
+#                   cpf: cpf do cliente
 def selecionar_caminho(cidades, origem, destino, caminhos):
     imprime_divisoria()
     
@@ -79,6 +88,9 @@ def verificar_passagens_compradas():
     return cpf
 
 # Função que exibe em tela compras de passagens encontradas de um CPF
+# Parâmetros ->     cpf: cpf do cliente
+#                   passagens: lista de compras de passagens de um cliente
+# Retorno ->        escolha: entrada do cliente entre menu principal (100) ou encerrar programa (0)
 def exibe_compras_cpf(cpf, passagens):
     imprime_divisoria()
     print(f"Compras do CPF {cpf}: \n")
