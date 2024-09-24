@@ -1,18 +1,24 @@
 import json
 import time
-from utils_client import *
+from utils_client import clear_terminal, imprime_divisoria, sleep_clear, cidades
 from interface import mostrar_menu_principal, selecionar_cidades, selecionar_caminho, verificar_passagens_compradas, exibe_compras_cpf
 from connection import conecta_server, encerrar_conexao, enviar_e_receber_mensagem
-
+import sys 
 #IP = '172.16.103.7'
 IP = 'localhost'
 
 PORTA = 65433
+cont = True
 
 def start_client():
+    global cont
     while True:
-        # Escolhe entre comprar uma passagem, ver passagens compradas em um CPF ou sair do programa
-        escolha = mostrar_menu_principal()
+        #escolha = mostrar_menu_principal()
+
+        if not cont:
+            escolha = input("1- Comprar\n0- Encerrar programa\n\n>>> ")
+        else:
+            escolha = sys.argv[1]
 
         if escolha == '0':
             break
@@ -22,11 +28,26 @@ def start_client():
         
         # Se escolheu comprar uma passagem
         if escolha == '1':
-            # Caso cliente não consiga se conectar, enviar ou receber dados ao servidor, 
-            # ele escolhe origem e destino de novo e tenta conectar e enviar ou receber os dados novamente
+            # Caso cliente não consiga enviar ou receber dados do servidor, ele escolher origem e destino de novo e tenta
+            # enviar ou receber os dados novamente
             while True:
-                origem, destino = selecionar_cidades(cidades)
+                #origem, destino = selecionar_cidades(cidades)
                 
+
+
+
+                if not cont:
+                    origem = input("Escolha o número referente à cidade origem: ")
+                else:
+                    origem = sys.argv[2]
+
+
+                if not cont:
+                    origem = input("Escolha o número referente à cidade destino: ")
+                else:
+                    destino = sys.argv[3]
+
+
                 # Encerra aplicação
                 if origem == "0" or destino == "0":
                     sair = 1
@@ -36,7 +57,7 @@ def start_client():
                 if origem == "100" or destino == "100":
                     menu = 1
                     
-                    clear_terminal()
+                    ##clear_terminal()
                     break
                 
                 # Se não conseguir se conectar ao servidor, volta a escolha das cidades
@@ -64,7 +85,6 @@ def start_client():
             # Fecha o programa
             if sair:
                 break
-
             flag, dado = data.decode('utf-8').split(',', 1)
 
             # Servidor não identificou flag enviada pelo cliente, encerra aplicação
@@ -74,42 +94,49 @@ def start_client():
 
                 time.sleep(4)
                 break
-            
-            # Lista de tuplas. Cada tupla = Um caminho
+
             caminhos = json.loads(dado)
 
             while True:
-                # Verifica se servidor achou algum caminho de origem à destino, se achou
-                # exibe caminhos e aguarda escolha do usuário entre voltar ao menu principal, sair do programa
-                # ou tentar comprar um caminho
                 if caminhos:
-                    # Caso cliente não consiga se conectar, enviar ou receber dados do servidor, 
-                    # ele escolhe caminho e cpf de novo e tenta conectar e enviar ou receber os dados novamente
+                    # Caso cliente não consiga enviar ou receber dados do servidor, ele escolhe caminho e cpf de novo e tenta
+                    # enviar ou receber os dados novamente
                     while True:
-                        escolha, cpf = selecionar_caminho(cidades, origem, destino, caminhos)
+                        #escolha, cpf = selecionar_caminho(cidades, origem, destino, caminhos)
+
+                        if not cont:
+                            escolha = input("Escolha um caminho: ")
+                        else:
+                            escolha = sys.argv[4]
+
+
+                        if not cont:
+                            cpf = input("Digite seu CPF para registro da compra (apenas os números): ")
+                        else:
+                            cpf = sys.argv[5]
+                            cont = False
+
 
                         # Encerra aplicação
-                        if escolha == "0" or cpf == "0":
+                        if escolha == "0":
                             sair = 1
                             break
                         
                         # Volta ao menu principal
-                        if escolha == "100" or cpf == "100":
+                        if escolha == "100":
                             menu = 1
 
-                            clear_terminal()
+                            ##clear_terminal()
                             break
+                        
+                        caminho = caminhos[int(escolha)-1]
+                        serializa = json.dumps(caminho)
 
                         # Se não conseguir se conectar ao servidor, volta para escolha do caminho
                         client_socket = conecta_server(IP, PORTA)
                         if client_socket is None:
                             sleep_clear(3)
                             continue
-                        
-                        caminho = caminhos[int(escolha)-1]
-
-                        # Uma tupla da lista de tuplas = Um caminho
-                        serializa = json.dumps(caminho)
 
                         mensagem = f"Comprar,,,{cpf},{serializa}"
 
@@ -123,7 +150,7 @@ def start_client():
                         encerrar_conexao(client_socket)
                         break
                     
-                    # se escolheu sair ou ir pro menu principal, sai do while e volta ao menu principal ou encerra programa
+                    # se escolheu sair ou ir pro menu principal, sai do while
                     if sair or menu:
                         break
 
@@ -138,7 +165,7 @@ def start_client():
                         time.sleep(4)
                         break
                     
-                    # Servidor enviou flag indicando que compra foi feita, volta ao menu principal automaticamente
+                    # Servidor enviou flag indicando que compra foi feita, volta ao menu principal
                     elif flag == "Compra_Feita":
                         imprime_divisoria()
                         print("Compra feita com sucesso!")
@@ -149,32 +176,29 @@ def start_client():
                     
                     # Servidor enviou flag indicando que o caminho escolhido não estava mais disponível
                     # Servidor retornou novos caminhos ou caminho vazio (não tem mais nenhum caminho de origem a destino)
-                    elif flag == "Novos_Caminhos_Encontrados":
-                        # Lista de tuplas atualizada. Cada tupla = Um caminho
+                    elif flag == "Novos_Caminhos":
                         caminhos = json.loads(dado)
-
                         imprime_divisoria()
                         print("Caminho escolhido não mais disponível!")
 
                         time.sleep(2)
 
-                # Caso servidor retorne nenhum caminho, volta ao menu principal automaticamente
+                # Caso servidor retorne nenhum caminho, volta ao menu principal
                 else:
                     imprime_divisoria()
                     print(f"Nenhum caminho disponível de {cidades[int(origem)-1]} para {cidades[int(destino)-1]}")
                     imprime_divisoria()
+                    sair = 1
 
-                    sleep_clear(5)
+                    #sleep_clear(5)
                     break
             
-            # Encerra aplicação
+            #Encerra aplicação
             if sair:
                 break
         
-        # Se escolheu verificar passagens compradas em um CPF
+        # Se escolheu verificar passagens compradas
         elif escolha == '2':
-            # Caso cliente não consiga se conectar, enviar ou receber dados do servidor, 
-            # ele escolhe cpf de novo e tenta conectar e enviar ou receber os dados novamente
             while True:
                 cpf = verificar_passagens_compradas()
                 
@@ -187,7 +211,7 @@ def start_client():
                 if cpf == "100":
                     menu = 1
                     
-                    clear_terminal()
+                    ##clear_terminal()
                     break
                 
                 # Se não conseguir se conectar ao servidor, volta a escolha do cpf
@@ -226,20 +250,18 @@ def start_client():
                 time.sleep(4)
                 break
             
-            # Lista de dicionários. Cada dicionário = Uma compra de determinado CPF
             passagens = json.loads(dado)
             
-            # Se servidor encontrou passagens compradas no CPF, 
-            # exibe e aguarda escolha do usuário entre voltar ao menu principal ou sair do programa
+            # Se servidor encontrou passagens compradas no CPF
             if passagens:
                 escolha = exibe_compras_cpf(cpf, passagens)
                 
                 if escolha == '0':
                     break
 
-                clear_terminal()
+                #clear_terminal()
 
-            # Se servidor não encontrou passagens compradas no CPF, volta ao menu principal automaticamente
+            # Se servidor não encontrou passagens compradas no CPF, volta ao menu
             else:
                 imprime_divisoria()
                 print(f"Não existem passagens compradas para CPF: {cpf}")
