@@ -93,7 +93,8 @@ def encerrar_conexao(new_socket):
     except (OSError, Exception) as e:
         print(f"Erro ao fechar o socket: {e}")
 
-# Função para enviar e receber mensagem (sempre que cliente envia mensagem, ele deve esperar resposta do servidor)
+# Função para cliente enviar e receber mensagem ao servidor 
+# (sempre que cliente envia mensagem, ele deve esperar resposta do servidor)
 def enviar_e_receber_mensagem(client_socket, mensagem):
     data = testa_conexao(client_socket, mensagem)
     if data is None:

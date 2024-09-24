@@ -92,7 +92,7 @@ def cria_arquivo_grafo():
         # As chaves desse dicionário são tuplas que armazenam a v1 e v2 (cidades com conexão)
         # Os valores dessas chaves são dicionários, onde as chaves serão as distancias, assentos e cpf. Os valores
         # dessas chaves são as informações desses dados, onde cpf é uma lista que guarda cpf's que compraram
-        # um assento (ou seja, lista[0] = cpf que comprou assento 1)
+        # um assento do trecho (ou seja, lista[0] = cpf que comprou assento 1)
         salvar_grafo(G)
 
 # Função que carrega um grafo do arquivo
@@ -216,7 +216,7 @@ def registra_compra(cpf, caminho, distancia, assentos):
     compras =  carregar_passagens_compradas()
 
     # Cria uma nova compra
-    # ps: caminho = lista contendo cidades que monta o caminho
+    # ps: caminho = lista contendo cidades que monta o caminho (trechos)
     #     assentos = lista contendo númeração dos assentos em cada trecho que forma o caminho
     #     distancia = inteiro numero em km da distancia total do caminho (soma dos trechos)
     #     valor = inteiro indicando valor do caminho
@@ -285,7 +285,7 @@ def adicionar_thread_fila(condition, current_thread, waiting_queue):
 # Função para remover uma thread da fila de acesso a região crítica
 def remover_thread_fila(condition, current_thread, waiting_queue):
     # Thread bloqueia acesso para se retirar da fila de acesso a regiao critica (deixa de ser a primeira)
-    # Notifica todas as threads na fila. A thread que ver que é a primeira na fila, acessa a região critica
+    # Notifica e acorda todas as threads na fila. A thread que ver que é a primeira na fila, acessa a região critica
     with condition:
         waiting_queue.get()
         condition.notify_all()

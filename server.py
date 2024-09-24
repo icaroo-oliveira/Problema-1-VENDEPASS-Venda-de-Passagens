@@ -9,7 +9,7 @@ IP = 'localhost'
 
 PORTA = 65433
 
-# Condition para controlar acesso a fila de threads (adicionar e retirar threads)
+# Condition para controlar acesso a fila de threads (adicionar e retirar threads na fila)
 condition = threading.Condition()
 
 # Lock separado para a região crítica (acesso a arquivos e afins)
