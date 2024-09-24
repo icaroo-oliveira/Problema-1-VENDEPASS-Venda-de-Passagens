@@ -1,31 +1,38 @@
-# VENDEPASS: Venda de Passagens
+<h1 align="center"> VENDEPASS: Venda de Passagens</h1>
 
 ## Introdução
+<div align="justify"> 
 
-No mundo atual, faz-se necessário - em muitos casos - a fragmentação de uma estrutura monolítica e rígida em partes menores, esse é o caso do setor de aviação de baixo custo, que através dessa divisão criou uma estrutura barata e muito mais acessível para voos. Essa fragmentação foi usada tanto na logística operacional interna da empresa, quanto na ideia de um servidor central que possa ser acessado por clientes de forma autônoma. Para isso, entretanto, faz-se necessário o estabelecimento de um servidor robusto que possa conseguir responder a diversos clientes, de uma maneira eficaz e segura, e que exponha um conjunto de métodos de comunicação servidor-cliente. Do lado dos clientes, é necessário também a criação de uma entidade instanciável para escolha e compra de passagens, que usará dos métodos do servidor para atualização de informações relevantes. Além disso, um formato de dados que seja comumente compreensível entre servidor e cliente deve ser usado. Foi escolhido o formato JSON (JavaScript Object Notation) para o propósito de armazenamento de informações dos voos. 
+No mundo atual, faz-se necessário - em muitos casos - a fragmentação de uma estrutura monolítica e rígida em partes menores, esse é o caso do setor de aviação de baixo custo, que através dessa divisão criou uma estrutura barata e muito mais acessível para voos. Essa fragmentação foi usada tanto na logística operacional interna da empresa, quanto na ideia de um servidor central que possa ser acessado por clientes de forma autônoma. 
 
-Para a implementação, foi usado o subsistema de rede TCP/IP, usando uma API socket básica para comunicação. O uso do TCP/IP se deu pelo fato de ser um padrão, escalável, flexível e seguro/confiável, já que ele garante a entrega dos pacotes de dados (IBM,2024). O projeto em sua completude foi feito usando a linguagem de programação Python, que oferecia recursos diversos como Mutexes e Threads, que foram de vital importância para o problema, principalmente no tocante ao acesso simultâneo. Além disso, foi usado uma biblioteca de grafos para organização de rotas, por distância e disponibilidade. Por fim, para uma melhor confiabilidade no uso e teste, foi adotado o uso de conteinerização com o Docker, promovendo estabilidade nos mais variados ambientes de utilização.
+Para isso, entretanto, faz-se necessário o estabelecimento de um servidor robusto que possa conseguir responder a diversos clientes, de uma maneira eficaz e segura, e que exponha um conjunto de métodos de comunicação servidor-cliente. Do lado dos clientes, é necessário também a criação de uma entidade instanciável para escolha e compra de passagens, que usará dos métodos do servidor para atualização de informações relevantes. Além disso, um formato de dados que seja comumente compreensível entre servidor e cliente deve ser usado. Foi escolhido o formato JSON (JavaScript Object Notation) para o propósito de armazenamento de informações dos voos. 
 
-Como resultado, criou-se uma estrutura servidor-cliente onde um servidor pode aceitar diversos clientes simultaneamente de forma que um cliente não interfira com a compra do outro. Existe ainda estabilidade em relação a conexão, no sentido que ela ocorre num período pequeno - somente no intervalo de envio e recebimento de dados - já ocorrendo a desconexão. No geral o sistema é ”stateless” (OSSAMA,2023), por não guardar informações relevantes entre requisições e pela estrutura supracitada.
+Para a implementação, foi usado o subsistema de rede TCP/IP, usando uma API socket básica para comunicação. O uso do TCP/IP se deu pelo fato de ser um padrão, escalável, flexível e seguro/confiável, já que ele garante a entrega dos pacotes de dados (IBM,2024). O projeto em sua completude foi feito usando a linguagem de programação Python, que oferecia recursos diversos como Mutexes, Threads e Queues, que foram de vital importância para o desenvolvimento do problema, principalmente no tocante ao acesso simultâneo. Além disso, foi usado uma biblioteca de grafos para organização de rotas, por distância e disponibilidade. Por fim, para uma melhor confiabilidade no uso e testes, foi adotado o uso de conteinerização com o Docker, promovendo estabilidade nos mais variados ambientes de utilização.
+
+Como resultado, criou-se uma estrutura servidor-cliente onde um servidor pode aceitar diversos clientes simultaneamente de forma que um cliente não interfira com a compra do outro. Existe ainda estabilidade em relação a conexão, no sentido que ela ocorre num período pequeno - somente no intervalo de envio e recebimento de dados - já ocorrendo a desconexão. No geral o sistema é *stateless* (OSSAMA,2023), por não guardar informações relevantes entre requisições e pela estrutura supracitada.
 
 ## Metodologia e Resultados
 
-**Arquitetura**: O sistema apresenta uma estrutura onde um servidor dispõe de um conjunto de métodos para troca de informações com os clientes. Esse servidor é apoiado por dois arquivos no formato JSON. O primeiro para armazenamento de informações de passagens (que registrará informações como distância, trajeto, valor e outros, para uma pessoa) e o segundo, será um arquivo que conterá em si os trechos e assentos disponíveis para aquele trecho, além de também salvar informações sobre os passageiros, como o CPF. 
+**Arquitetura**: 
+
+O sistema apresenta uma estrutura onde um servidor dispõe de um conjunto de métodos para troca de informações com os clientes. Esse servidor é apoiado por dois arquivos no formato JSON. O primeiro para armazenamento de informações de passagens (que registrará informações das compras de uma pessoa/cpf como distância, número do assento, trajeto e valor) e o segundo, será um arquivo que conterá em si os trechos entre cidades, a distância entre essas cidades e os assentos disponíveis para cada trecho, além de também salvar informações do comprador de um assento de determinado trecho, como o CPF. 
 
 Os módulos do cliente são apoiados por sub-módulos:
-* O primeiro está relacionado a utilidades, como cálculo de distâncias e limpeza de terminais (utils_cliente).
-* O segundo é chamado ‘’interface’’. Que é um sub-módulo responsável por toda interatividade por parte do cliente. Contém métodos que mostram menus, seleção de cidades de origem, destino e caminho (conjunto de trechos) escolhido. É um “módulo meio” responsável por coletar ‘’inputs’’ e passar para a parte de processamento.
-* O último, comum também ao servidor, é o ‘’connection’’, ele é o responsável por implementar toda lógica de comunicação. De funções usadas pelo cliente deste módulo estão: conectar cliente com o servidor, enviar e receber mensagens (para o servidor), e desconexão (encerrar conexão) com servidor, além de funções de teste de conexão, usadas para casos onde a queda ocorre.
+* O primeiro está relacionado a utilidades, como cálculo do valor de um caminho por quilômetro e limpeza de terminais (utils_cliente).
+* O segundo é chamado *interface*. Que é um sub-módulo responsável por toda interatividade por parte do cliente. Contém métodos que mostram menus, seleção de cidades de origem, destino e caminho (conjunto de trechos) escolhido. É um “módulo meio” responsável por coletar ‘’inputs’’ e passar para a parte de processamento.
+* O último, comum também ao servidor, é o *connection*. Ele é o responsável por implementar toda lógica de comunicação. De funções usadas pelo cliente deste módulo estão: configurar socket e conectar cliente com o servidor, enviar e receber mensagens (para o servidor), e desconexão (encerrar conexão) com servidor, além de funções de teste de conexão, usadas para casos onde a queda ocorre.
 
 Já o módulo do servidor é apoiado por dois sub-módulos:
-* O primeiro é relacionado a utilidades do servidor, como a criação do grafo de trechos (já predefinido), carregar o grafo (trechos de viagem), carregar as passagens já compradas, salvar grafos e passagens, e encontrar caminhos.
-* O último, é o ‘’connection’’, em si está contido funções de configuração de servidor (criação e configuração do socket, associação a uma endereço/porta e estabelecer o número máximo de conexão da fila), receber dados, encerrar conexão e testar conexão (usado quando é necessário saber se ainda existe conexão).
+* O primeiro é relacionado a utilidades do servidor, como a criação do grafo de trechos (já predefinido), carregar o grafo (trechos de viagem), carregar as passagens já compradas, salvar grafos e passagens, encontrar caminhos e verificações de compras em um CPF ou caminhos válidos. Ademais, possui também funções para adicionar e retirar threads da fila de acesso a região crítica do sistema, que será melhor abordada em tópicos posteriores.
+* O último é o *connection*. Nele está contido funções de configuração de servidor (criação e configuração do socket, associação a uma endereço/porta e estabelecer o número máximo de conexão da fila), receber dados e enviar dados de um cliente, encerrar conexão e testar conexão (usado quando é necessário saber se ainda existe conexão).
 
-**Paradigma de Comunicação**: O paradigma aplicado foi o "Stateless" (OSSAMA,2023), visto que cada nova requisição é tratada de forma independente e separada de outras pelo servidor, de forma que o servidor não mantém informações do cliente entre as requisições. Foi escolhido esse paradigma tanto pela escalabilidade - podendo replicar o servidor - de modo que as mais diversas solicitações, nos mais diversos ‘’estágios de compra’’ pudessem ser tratado por qualquer instância desse ‘’server’’, mesmo se uma instância caísse - e até se essa instância caísse e retornasse - a outra poderia continuar, visto que o servidor não mantém informações. Além disso, existe a redução de complexidade, no sentido de ficar salvando estados. Por fim, para a ideia proposta de conexão somente para envio e recebimento de dados e uso de flags, esse foi o melhor modelo para o servidor.
+**Paradigma de Comunicação**: 
+
+O paradigma aplicado foi o *Stateless* (OSSAMA,2023), visto que cada nova requisição é tratada de forma independente e separada de outras pelo servidor, de forma que o servidor não mantém informações do cliente entre as requisições. Foi escolhido esse paradigma tanto pela escalabilidade - podendo replicar o servidor - de modo que as mais diversas solicitações, nos mais diversos ‘’estágios de compra’’ pudessem ser tratado por qualquer instância desse ‘’server’’, mesmo se uma instância caísse - e até se essa instância caísse e retornasse - a outra poderia continuar, visto que o servidor não mantém informações. Além disso, existe a redução de complexidade, no sentido de ficar salvando estados. Por fim, para a ideia proposta de conexão somente para envio e recebimento de dados e uso de flags, esse foi o melhor modelo para o servidor.
 
 **Protocolo de comunicação**: 
 
-Formato das mensagens: Em relação ao formato das mensagens, o protocolo adota uma estrutura de mensagem como uma ‘’string’’, onde cada campo é separado por vírgulas. Abaixo as mensagem para uma comunicação Cliente → Servidor (cliente enviando mensagem), sempre de tamanho 5, como mostra a Figura 1:
+Em relação ao formato das mensagens, o protocolo adota uma estrutura de mensagem como uma ‘’string’’, onde cada campo é separado por vírgulas. Após a formatação da string a ser enviada, a mesma é codificada para bytes e enviada via rede. No recebimento, esses bytes são decodificados novamente para string e a aplicação consegue tratar da forma necessária essa informação. Abaixo as mensagem para uma comunicação Cliente → Servidor (cliente enviando mensagem), sempre de tamanho 5, como mostra a Figura 1:
 
 
 <p align="center">
@@ -46,7 +53,7 @@ De outro modo, Servidor → Cliente (servidor enviando mensagem), sempre tamanho
 <p align="center"><strong> Figura 2. Mensagem Servidor -> Cliente </strong></p>
 </strong></p>
 
-Independente de quem envie a informação, o outro lado sempre tem uma forma de recebê-la. O último campo da ‘’string’’ acima é flexível, podendo retornar as passagens do usuário também.
+Independente de quem envie a informação, o outro lado sempre tem uma forma de recebê-la. O último campo da ‘’string’’ acima é flexível, podendo retornar as passagens compradas por um CPF também. Pelo fato dos campos *Caminho* (cliente -> servidor) e *Caminhos** (servidor -> cliente), serem listas/tuplas, é necessário a conversão das mesmas para *strings json* antes da formatação da mensagem. 
 
 A estrutura das mensagens sempre são respeitadas, mesmo que alguns campos possam ter valor vazio. Todos os campos são autoexplicativos, exceto a “Flag”. Na tabela abaixo, as “Flags” na linha “Cliente” indicam uma comunicação do tipo Cliente → Servidor, de modo que quem cria a “Flag” e envia é o cliente. Na linha “Servidor”, o contrário acontece.
 
@@ -104,40 +111,55 @@ A Figura 4, exemplifica o fluxo de mensagens para uma compra bem sucedida:
 </strong></p>
 
 
-**Formatação e tratamento de dados**:Para formatação de dados foi usado o sistema JSON (Website JSON, 2024), que é um sistema de arquivo baseado em dicionários e listas. Com o JSON foram criados dois tipos de arquivos como já citado anteriormente, um para passagens e outro para trechos e caminhos. A estrutura do arquivo para passagens é um dicionário que tem como chaves o CPF e valor uma lista que contém todas as compras desse CPF. Cada compra é um dicionário com os caminhos, assentos, distância e valor da viagem como chaves.
-Já o arquivo de trechos, são os diversos trechos que, quando combinados formam um caminho. Tem a estrutura de um dicionário onde as chaves são tuplas que contém um “trecho” (ex: “São paulo”, “Rio de Janeiro”) e valor um dicionário que contém como chaves distância, assentos e CPFs das pessoas que viajarão por aquele trecho) .
+**Formatação e tratamento de dados**: 
 
-O grafo da Figura 5 foi usado como base para composição de trechos e caminhos, a sigla do estado é usada para referenciar as capitais dos estados.
+Para formatação de dados foi usado o sistema JSON (Website JSON, 2024), que é um sistema de arquivo baseado em dicionários e listas. Com o JSON foram criados dois tipos de arquivos como já citado anteriormente, um para passagens e outro para trechos. A estrutura do arquivo para passagens é um dicionário que tem como chaves o CPF e valor uma lista que contém todas as compras desse CPF. Cada compra é um dicionário com os caminhos, assentos, distância e valor da viagem como chaves.
+Já o arquivo de trechos, são os diversos trechos que ligam as cidades disponíveis no sistema. Tem a estrutura de um dicionário onde as chaves são tuplas que contém um “trecho” (ex: “São paulo”, “Rio de Janeiro”) e valor um dicionário que contém como chaves distância, assentos e CPFs das pessoas que viajarão por aquele trecho.
 
+O grafo da Figura 5 foi usado como base para composição de trechos. A sigla do estado é usada para referenciar as capitais dos estados. É válido salientar, que a união de trechos formam um caminho e pelo fato de que, por exemplo, o voo de Cuiabá -> Goiânia não ser o mesmo que Goiânia -> Cuiabá, o grafo é bidirecional, mesmo a distância sendo as mesma.
 
 <p align="center">
   <img src="Imagens/grafo.png" width = "600" />
 </p>
-<p align="center"><strong> Figura 5. Grafo de rotas e caminhos </strong></p>
+<p align="center"><strong> Figura 5. Grafo de rotas </strong></p>
 </strong></p>
 
 
-**Tratamento de conexões simultâneas e Tratamento de Concorrência**:O sistema não permite a compra de forma 100% paralela. Apesar de ser possível diversos clientes estarem comprando - com múltiplas threads sendo disparadas  - (cada thread sendo um cliente), quando o processamento de uma compra acontece, é usado um Mutex para travar aquela região de acesso aos dados dos arquivos, isso é feito para que não exista erros de disponibilidade de passagens durante a compra. Enquanto a região está travada, a outra solicitação de acesso ao arquivo fica esperando até que o ‘’lock’’ seja suspenso. Para otimizar ainda mais o paralelismo poderia retirar o ‘’lock’’ nos  momentos de somente leitura de dados, apesar que fazendo isso, existiria a chance de dados desatualizados serem repassados para outros usuários. Poderia também aplicar uma forma de verificação baseada na interseccionalidade entre trechos e rotas, só ‘’travando’’ uma compra se existisse uma compra atual, que tivesse trechos em comum. 
+**Tratamento de conexões simultâneas e Tratamento de Concorrência**: 
+
+O sistema não permite a compra de forma 100% paralela. Apesar de ser possível diversos clientes estarem comprando - com múltiplas threads sendo disparadas  - (cada thread sendo um cliente), quando uma requisição acontece, é usado um Mutex para travar aquela região de acesso aos dados dos arquivos, isso é feito para que não exista erros de disponibilidade de passagens durante a compra, além da possibilidade de erros inesperados envolvendo condições de corrida. 
+
+Enquanto a região está travada, ou seja, processando uma requisição do cliente, uma outra solicitação de acesso ao arquivo é adicionada em uma fila FIFO, aguardando que a região seja liberada e sua vez na fila chegue. Dessa forma além de garantir a integridade dos dados manipulados, o conceito de concorrência é sanado, visto que o cliente que enviar primeiro a requisição de compra de um trecho terá prioridade ante os demais. 
 
 
-**Documentação do código**:O código está completamente comentado e documentado.
+**Documentação do código**: 
+
+O código está completamente comentado e documentado.
 
 
-**Emprego do Docker**:O código faz uso da conteinerização com Docker, para, como mencionado anteriormente, proporcionar uma ambiente seguro e confiável para testes (RED HAT, 2024). Foi criado um Docker para o servidor, com uma imagem 3.12-slim, instalando as bibliotecas necessárias para grafo e sub-módulos além do ‘’EXPOSE’’ na porta usada. Para o Docker do cliente, foi a mesma imagem python e foi carregado os sub-módulos. Por fim, criou-se um Docker Compose, para orquestrar e criar uma rede que ligasse o Docker do servidor com o do cliente.
+**Emprego do Docker**: 
+
+O código faz uso da conteinerização com Docker, para, como mencionado anteriormente, proporcionar uma ambiente seguro e confiável para testes (RED HAT, 2024). Foi criado um Docker para o servidor, com uma imagem 3.12-slim, instalando as bibliotecas necessárias para grafo e sub-módulos além do ‘’EXPOSE’’ na porta usada. Para o Docker do cliente, foi a mesma imagem python e foi carregado os sub-módulos. Por fim, criou-se um Docker Compose, para orquestrar e criar uma rede que ligasse o Docker do servidor com o do cliente.
 
 
-**Desempenho e avaliação**:O sistema faz uso de Threads (linhas de execuções), sendo que cada uma é disparada para cada solicitação do cliente, isso faz com que exista uma redução no tempo entre solicitações dos mais diversos clientes. Além disso, a fila de solicitação para requisições foi ajustada para 50. De modo que é possível armazenar 50 requisições enquanto uma está sendo passada para uma thread. O desempenho do sistema foi satisfatório. Foi feito um script que criou 50 terminais solicitando a mesma coisa, o servidor conseguiu processar todas solicitações e não deixou que uma mesma passagem fosse comprada quando não estivesse mais disponível. 
+**Desempenho e avaliação**: 
+
+O sistema faz uso de Threads (linhas de execuções), sendo que cada uma é disparada para cada solicitação do cliente, isso faz com que exista uma redução no tempo entre solicitações dos mais diversos clientes. Além disso, a fila de solicitação para requisições foi ajustada para 50. Deste modo, é possível armazenar 50 requisições enquanto uma está sendo passada para uma thread. O desempenho do sistema foi satisfatório. Foi feito um script que criou 50 terminais solicitando os mesmos dados, onde o servidor conseguiu processar todas solicitações, sequencialmente, não deixando que uma mesma passagem fosse comprada quando não estivesse mais disponível e garantindo que cliente 1 comprasse antes que cliente 2, graças a fila FIFO para acesso das threads à região crítica (arquivos). 
 
 
-**Confiabilidade da solução**:Foram feitos diversos testes em relação à desconexão, de modo que o sistema continuou funcionando.
-* O primeiro foi quando o servidor é desconectado, após os trajetos serem retornados pelo servidor, se o cliente tentar enviar dados falhará pois o servidor não estará disponível. Mas se o cabo do servidor for conectado, é possível prosseguir a compra a partir daquele momento, a base disso é o fato do servidor ser “stateless”.
-* O segundo teste é parecido com o primeiro, mas agora se o cliente é desconectado, logo após a fase de envio de origem e destino, o cliente consegue voltar e escolher/comprar entre um dos caminhos retornados dá origem ao destino.
+**Confiabilidade da solução**: 
 
 Foi adicionado tanto para cliente quanto para o servidor um tempo de espera para enviar, receber e se conectar (entre si), usada em casos onde após um tempo excedido (10 segundos) é retornado um erro de temporização. Além disso, excedido esse tempo, o cliente volta sempre para o início do estágio onde estava.
 
+Além disto, foram feitos diversos testes em relação à desconexão, de modo que o sistema continuou funcionando.
+* O primeiro foi quando uma conexão cliente/servidor é estabelecida, porém antes de o servidor receber os dados do cliente, o servidor perde rede. Dessa forma, o cliente é informado que o servidor não está mais disponível (não recebeu a resposta da requisição) e ele pode tentar enviar uma requisição novamente, porém como se trata de uma nova conexão, o cliente nem ao menos consegue conectar, visto que o servidor está sem rede. Ao servidor estabelecer rede novamente, é possível prosseguir a compra a partir daquele momento, a base disso é o fato do servidor ser *stateless*.
+* O segundo teste é parecido com o primeiro, mas agora se o cliente perde conexão, antes de receber a resposta de uma requisição enviada ao servidor. Como o servidor já recebeu a requisição do cliente, a compra já foi processada em sistema, porém como o cliente caiu, o cliente não chega a receber a confirmação.
+
+Outros testes foram realizados como: Enviando flags inválidas ao servidor, forçando ocorrências de timeout através de "sleep's", cliente conectando no endereço de servidor inválido, cliente conectando ao servidor que não está operando, entre outros. Para todos estes, a aplicação conseguiu identificar e se possível solucionar, mostando a eficiência do sistema.
+
 # Conclusão
 
-Por fim, foi possível criar um sistema servidor-cliente robusto e resistente a a falhas, com forma maleável e eficaz. O fato de não haver salvamento de informações por parte do servidor, bem como as conexão só ocorrerem no momento de envio da mensagem, faz desse sistema bastante seguro. O servidor aceita múltiplas linhas de execução (Threads) e possuí segurança no que diz respeito a acesso e segurança dos dados, evitando problemas como compras de uma passagem não mais disponível. De melhoras para o sistema, um sistema de cache para maior velocidade de processamento seria uma adição bem-vinda para o sistema, de forma adicionar ainda mais eficácia do servidor no processamento de requisições. No mais foi possível criar contêiner para o servidor e cliente, proporcionando um ambiente de testagem seguro.
+Por fim, foi possível criar um sistema servidor-cliente robusto e resistente a falhas, com forma maleável e eficaz. O fato de não haver registro de estados por parte do servidor, bem como as conexão só ocorrerem no momento de envio da mensagem, faz desse sistema bastante seguro. O servidor aceita múltiplas linhas de execução (Threads) e possuí segurança no que diz respeito a acesso e segurança dos dados, evitando problemas como compras de uma passagem não mais disponível. De melhoras para o sistema, um sistema de cache para maior velocidade de processamento seria uma adição bem-vinda para o sistema, de forma adicionar ainda mais eficácia do servidor no processamento de requisições. No mais foi possível criar contêiner para o servidor e cliente, proporcionando um ambiente de testagem seguro.
 
 # Referências
 
