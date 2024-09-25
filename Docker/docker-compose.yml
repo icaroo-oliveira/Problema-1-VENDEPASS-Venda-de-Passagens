@@ -19,8 +19,6 @@ services:
     build: #construir uma imagem a parti do dockerfile
       context: ..
       dockerfile: Docker/Dockerfile.cliente #docker file usada para imagem 
-    depends_on:
-      - server
     image: problema-1-vendepass-venda-de-passagens-client #nome da imagem
     container_name: client-container1 #nome do container criado com base na imagem
     stdin_open: true    # mantém o terminal aberto para interação
