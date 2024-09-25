@@ -4,8 +4,9 @@ import queue
 from connection import config_server, receber_mensagem, encerrar_conexao, testa_conexao, get_ip_address
 from utils_server import *
 
-#IP = get_ip_address('enp3s0f0')
-IP = 'localhost'
+#IP = get_ip_address('enp3s0f0') #pega o ip da máquina automaticamente...
+IP = 'localhost' #também 
+#IP = '0.0.0.0' #teste no docker...ip que fica visível para outros dockers
 
 PORTA = 65433
 
