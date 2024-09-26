@@ -82,7 +82,7 @@ def enviar_mensagem(new_socket, mensagem):
 # Retorno ->        mensagem recebida caso seja bem sucedido ou None caso ocorra algum erro
 def receber_mensagem(new_socket):
     try:
-        data = new_socket.recv(1024)
+        data = new_socket.recv(4096)
 
         # Um dos lados encerrou conexão
         if data == b'':
